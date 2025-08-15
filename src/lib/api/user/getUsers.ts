@@ -11,7 +11,7 @@ export async function getUsers(): Promise<User[]> {
 
     const json = await res.json();
     const data: User[] = json;
-    console.log(data)
+    console.log("Get Users:", data)
     return data;
 
   } catch (err) {

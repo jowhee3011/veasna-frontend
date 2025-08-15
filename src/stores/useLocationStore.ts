@@ -14,8 +14,8 @@ export const useLocationStore = create<LocationState>()(
     (set) => ({
       location: null,
       hasHydrated: false,
-      setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
       setLocation: (location: Location) => set({ location }),
+      setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
     }),
     {
       name: "location-storage",

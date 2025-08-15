@@ -11,11 +11,11 @@ export async function getLocations(): Promise<Location[]> {
 
     const json = await res.json();
     const data: Location[] = json.locations;
-
+    console.log("Get Locations:", data)
     return data;
 
   } catch (err) {
-    console.error('GET error:', err);
+    console.error("GET error:", err);
     return [];
   }
 }

@@ -7,9 +7,9 @@ import { getLocations } from "@/lib/api/location/getLocations"
 
 // Add on or remove accordingly
 const defaultLocations: Location[] = [
-  { name: "Loc A" },
-  { name: "Loc B" },
-  { name: "Loc C" },
+  { id: 1, name: "Loc A" },
+  { id: 2, name: "Loc B" },
+  { id: 3, name: "Loc C" },
 ]
 
 export default function LocationsDropdown() {
@@ -21,7 +21,8 @@ export default function LocationsDropdown() {
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value
-    setLocation({ name: selected })
+    const selectedLocation = locations.find(loc => loc.name === selected)!;
+    setLocation(selectedLocation)
   }
 
   useEffect(() => {
