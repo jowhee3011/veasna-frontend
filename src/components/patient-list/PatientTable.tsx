@@ -1,4 +1,3 @@
-import React from 'react';
 // import { EditIcon, PlusIcon, TrashIcon } from '../../assets/icons';
 import { Patient } from '@/lib/types/patient';
 import { PatientTableRow } from './PatientTableRow';
@@ -43,15 +42,15 @@ export function PatientTable({ patients, onViewPatient, onEditPatient, onDeleteP
                 <th className="w-1/20 px-4 py-3 uppercase text-left text-xs font-medium text-gray-900 tracking-wider">Sex</th>
                 <th className="w-2/18 px-4 py-3 uppercase text-left text-xs font-medium text-gray-900 tracking-wider">Phone No.</th>
                 <th className="px-4 py-3 uppercase text-left text-xs font-medium text-gray-900 tracking-wider">Address</th>
-                <th className="w-1/20 px-4 py-3 uppercase text-left text-xs font-medium text-gray-900 tracking-wider">Face ID</th>
-                <th className="w-2/18 px-4 py-3 uppercase text-left text-xs font-medium text-gray-900 tracking-wider">Last Updated</th>
+                {/* <th className="w-1/20 px-4 py-3 uppercase text-left text-xs font-medium text-gray-900 tracking-wider">Face ID</th> */}
+                <th className="w-2/18 px-4 py-3 uppercase text-left text-xs font-medium text-gray-900 tracking-wider">Created At</th>
                 <th className="w-22 py-3 uppercase text-left text-xs font-medium text-gray-900 tracking-wider">Actions</th>
               </tr>
             </thead>
 
             <tbody className="bg-white divide-y divide-gray-200">
               {patients
-                .sort((a, b) => sortQueueNumber(a.queueNumber, b.queueNumber))
+                .sort((a, b) => sortQueueNumber(a.queue_no, b.queue_no))
                 .map((patient)=> (
                 <PatientTableRow
                   key={patient.id}

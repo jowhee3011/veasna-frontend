@@ -9,7 +9,7 @@ interface PatientData {
     sex: string;
     phoneNumber: string;
     address: string;
-    faceId: string;
+    // faceId: string;
 }
 
 interface Props {
@@ -234,7 +234,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                     />
                 </div>
 
-                <div className='flex items-center gap-4'>
+                {/* <div className='flex items-center gap-4'>
                   <label className='min-w-[120px] text-sm font-medium'>
                         Face ID
                     </label>
@@ -245,7 +245,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                         onChange={(e) => handleChange('faceId', e.target.value)}
                         className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
                     />
-                </div>
+                </div> */}
 
         </div>
     );

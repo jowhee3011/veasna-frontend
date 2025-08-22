@@ -5,35 +5,36 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from 'next/navigation';
 import { PatientFormData } from "@/lib/types/PatientData";
 import { EditIcon, EyeIcon, PlusIcon } from "@/assets/icons";
+import { useState } from "react";
 // import { addPatient } from "@/lib/api/patient/addPatient";
 
 // Create an empty PatientData for every create ot edit request
 const initialPatientData: PatientFormData = {
     // Patient's Info
-    queueNumber: '',
-    englishName: '',
-    khmerName: '',
-    dateOfBirth: '',
-    age: '',
-    sex: '',
-    phoneNumber: '',
+    queue_no: '',
+    english_name: '',
+    khmer_name: '',
+    date_of_birth: '',
+    age: 0,
+    sex: "M",
+    phone_number: '',
     address: '',
-    faceId: '',
-    lastUpdated: '',
+    // faceId: '',
+    created_at: '',
     // Vitals
-    height: '',
-    weight: '',
-    bmi: '',
+    height_cm: 0,
+    weight_kg: 0,
+    bmi: 0,
     category: '',
-    isBelow3rdPercentile: false,
-    bloodPressureSystolic: '',
-    bloodPressureDiastolic: '',
+    is_below_third_percentile: false,
+    blood_pressure_systolic: '',
+    blood_pressure_diastolic: '',
     temperature: '',
-    additionalNotes: '',
+    additional_notes: '',
     // HEF
-    knowsAboutHEF: '',
-    hasHEF: '',
-    useHEFReason: ''
+    knows_about_hef: '',
+    has_hef: '',
+    use_hef_reason: ''
 }
 
 export default function PatientForm() {
@@ -119,7 +120,7 @@ export default function PatientForm() {
 
     const getTitle = () => {
         if (isView) return 'View Patient';
-        if (isEdit) return `Edit Patient: ${localPatient.englishName}`;
+        if (isEdit) return `Edit Patient: ${localPatient.english_name}`;
         return 'Add New Patient';
     };
 

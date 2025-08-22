@@ -1,27 +1,27 @@
 export interface PatientFormData {
     // Patient Info
-    queueNumber: string;
-    englishName: string;
-    khmerName: string;
-    dateOfBirth: string;
-    age: string;
-    sex: string;
-    phoneNumber: string;
+    queue_no: string;
+    english_name: string;
+    khmer_name: string;
+    date_of_birth: string;
+    age: number;
+    sex: "M" | "F";
+    phone_number: string;
     address: string;
-    faceId: string;
-    lastUpdated: string;
+    // faceId: number;
+    created_at: string;
     // Vitals
-    height: string;
-    weight: string;
-    bmi: string;
+    height_cm: number;
+    weight_kg: number;
+    bmi: number;
     category: string;
-    isBelow3rdPercentile: boolean;
-    bloodPressureSystolic: string;
-    bloodPressureDiastolic: string;
+    is_below_third_percentile: boolean;
+    blood_pressure_systolic: string;
+    blood_pressure_diastolic: string;
     temperature: string;
-    additionalNotes: string;
+    additional_notes: string;
     // HEF
-    knowsAboutHEF: string;
-    hasHEF: string;
-    useHEFReason: string;
+    knows_about_hef: string;
+    has_hef: string;
+    use_hef_reason: string;
 }

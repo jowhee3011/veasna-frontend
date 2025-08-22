@@ -11,16 +11,16 @@ interface PatientTableRowProps {
 export function PatientTableRow({ patient, onViewPatient, onEditPatient, onDeletePatient}: PatientTableRowProps) {
     return (
         <tr className="h-16 align-middle hover:bg-blue-50 tansition-colors duration-150">
-                <td className="px-4 py-3 text-sm text-blue-500">{patient.queueNumber}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{patient.englishName}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{patient.khmerName}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{patient.dateOfBirth}</td>
+                <td className="px-4 py-3 text-sm text-blue-500">{patient.queue_no}</td>
+                <td className="px-4 py-3 text-sm text-gray-900">{patient.english_name}</td>
+                <td className="px-4 py-3 text-sm text-gray-900">{patient.khmer_name}</td>
+                <td className="px-4 py-3 text-sm text-gray-900">{patient.date_of_birth}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{patient.age}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{patient.sex}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{patient.phoneNumber}</td>
+                <td className="px-4 py-3 text-sm text-gray-900">{patient.phone_number}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{patient.address}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{patient.faceId}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{patient.lastUpdated.toLocaleString()}</td>
+                {/* <td className="px-4 py-3 text-sm text-gray-900">{patient.faceId}</td> */}
+                <td className="px-4 py-3 text-sm text-gray-900">{patient.created_at.toLocaleString()}</td>
                 <td className="py-3 text-sm text-gray-900">
                     <div className="flex items-center gap-2">
 

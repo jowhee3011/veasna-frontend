@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { FullSearchBar } from '@/components/patient-list/FullSearchBar';
 import { PatientTable } from '@/components/patient-list/PatientTable';
 import { useRouter } from 'next/navigation';
@@ -9,40 +9,47 @@ import { useRouter } from 'next/navigation';
 import { Patient } from '@/lib/types/patient';
 import { LocationIcon, PlusIcon } from '@/assets/icons';
 import { PatientPageHeader } from '@/components/patient-list/PageHeader';
-import { SAMPLE_PATIENTS } from '@/sampleData/SAMPLE_PATIENTS';
+// import { SAMPLE_PATIENTS } from '@/sampleData/SAMPLE_PATIENTS';
 import LocationsDropdown from '@/components/shared/LocationsDropdown';
+import { usePatients } from '../hooks/usePatients';
+import { useLocationStore } from '@/stores/useLocationStore';
 
   
 export default function PatientListPage() {
 
+  const location = useLocationStore((state) => state.location)
+  const retrievedPatients = usePatients(location).patients;
+
+  console.log("retrieved:", retrievedPatients)
+
   const router = useRouter();
-  const [patients, setPatients] = useState<Patient[]>(SAMPLE_PATIENTS);
+  const [patients, setPatients] = useState<Patient[]>(retrievedPatients);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-    const filteredPatients = useMemo(() => {
-      if (!searchTerm.trim()) {
-        return patients;
-      }
+  const filteredPatients = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return patients;
+    }
 
-      // is there a toLowerCase for khmer strings?
-      const searchLower = searchTerm.toLowerCase()
+    // is there a toLowerCase for khmer strings?
+    const searchLower = searchTerm.toLowerCase()
 
-      return patients.filter((patient) => {
-        const searchNum = parseInt(searchLower, 10);
-        const queueMatch = (() => {
-          const numMatch = patient.queueNumber.match(/^\d+/); // Extract leading digits
-          if (!numMatch) return false;
-          const queueNum = parseInt(numMatch[0], 10);
-          return !isNaN(searchNum) && queueNum >= searchNum;
-        })();
-      
-        return (
-          patient.englishName.toLowerCase().includes(searchLower) ||
-          patient.khmerName.toLowerCase().includes(searchLower) ||
-          queueMatch
-        );
-      });
-    }, [patients, searchTerm])
+    return patients.filter((patient) => {
+      const searchNum = parseInt(searchLower, 10);
+      const queueMatch = (() => {
+        const numMatch = patient.queue_no.match(/^\d+/); // Extract leading digits
+        if (!numMatch) return false;
+        const queueNum = parseInt(numMatch[0], 10);
+        return !isNaN(searchNum) && queueNum >= searchNum;
+      })();
+    
+      return (
+        patient.english_name.toLowerCase().includes(searchLower) ||
+        patient.khmer_name.toLowerCase().includes(searchLower) ||
+        queueMatch
+      );
+    });
+  }, [patients, searchTerm])
 
     const handleSearchChange = (term: string) => {
       setSearchTerm(term);
@@ -74,6 +81,10 @@ export default function PatientListPage() {
         console.log('Delete patient Clicked:', patientId);      
       }
     };
+    
+    useEffect(() => {
+      setPatients(retrievedPatients);
+    }, [retrievedPatients]);
   
     return (
       <div className="min-h-screen p-6">
