@@ -14,11 +14,8 @@ import { getPatient } from "@/lib/api/patient/getPatients";
 import { getVisit } from "@/lib/api/visit/getVisit";
 import { updatePatient } from "@/lib/api/patient/updatePatient";
 import formatDate from "@/helper/format_date";
-
-// import { exportPatientReferrals } from "@/lib/api/exportService";
-// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-// import { Download } from "lucide-react";
 import toast from "react-hot-toast";
+import { BodyChartDisplay } from "@/components/patient-details/BodyChartDisplay";
 
 interface Visit {
   visit_id: number;
@@ -171,15 +168,6 @@ export default function PatientDetailsPage() {
       ? age - 1 : age;
   };
 
-  // const handleExport = (format: 'pdf' | 'excel') => {
-  //   const promise = exportPatientReferrals(patientId, format);
-  //   toast.promise(promise, {
-  //       loading: `Generating ${format.toUpperCase()}...`,
-  //       success: 'Download starting!',
-  //       error: (err) => err.message || 'Failed to export referrals.',
-  //   });
-  // };
-
   if (isLoading) {
     return <div className="flex items-center justify-center h-screen">Loading patient details...</div>;
   }
@@ -216,25 +204,6 @@ export default function PatientDetailsPage() {
             <EditIcon className="w-4 h-4 mr-2 text-white"/>
             {isEditing ? 'Save Changes' : 'Edit Patient'}
           </Button>
-          
-          {/* Export button */}
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <Download className="w-4 h-4 mr-2" />
-                Export Referrals
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleExport('pdf')}>
-                Export as PDF
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleExport('excel')}>
-                Export as Excel
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-
         </div>
       </div>
 
@@ -567,16 +536,8 @@ export default function PatientDetailsPage() {
                           
                           {visitDetails.physiotherapy.painpoints?.length > 0 && (
                             <div>
-                              <p className="text-sm font-medium text-gray-500 mb-3">Pain Points</p>
-                              <div className="space-y-2">
-                                {visitDetails.physiotherapy.painpoints.map((point: any, index: number) => (
-                                  <div key={point.id} className="bg-gray-50 p-3 rounded-md border">
-                                    <p className="text-sm">
-                                      <span className="font-medium">Point {index + 1}:</span> X: {point.x_coord.toFixed(2)}, Y: {point.y_coord.toFixed(2)}
-                                    </p>
-                                  </div>
-                                ))}
-                              </div>
+                              <p className="text-sm font-medium text-gray-500 mb-3">Body Chart - Pain Points</p>
+                              <BodyChartDisplay painpoints={visitDetails.physiotherapy.painpoints} />
                             </div>
                           )}
                         </div>
