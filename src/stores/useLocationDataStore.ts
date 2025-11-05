@@ -6,6 +6,7 @@ import { useLocationStore } from "./useLocationStore";
 import { getQueue } from "@/lib/api/queue/getQueue";
 import { PatientInfo, QueuedPatient } from "@/lib/types/patient";
 import { Drug } from "@/lib/types/drug";
+import toast from "react-hot-toast";
 
 interface LocationDataStore {
   all_patients: PatientInfo[];
@@ -21,7 +22,10 @@ export const useDataStore = create<LocationDataStore>((set, get) => ({
   fetchData: async () => {
     try {
       const locationId = useLocationStore.getState().currentLocation?.id;
-      if (!locationId) throw new Error("No current location selected")
+      if (!locationId) {
+        toast("Please select your location.")
+        return
+      }
 
       const token = useUserStore.getState().user?.token; 
       if (!token) throw new Error("No auth token available");

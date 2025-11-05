@@ -8,16 +8,32 @@ import { useEffect, useState } from "react";
 import { Location } from "@/lib/types/location";
 import { Button } from "../ui/button";
 import { RefreshCw } from "lucide-react";
+import { getLocations } from "@/lib/api/location";
+import { LocalPattern } from "next/dist/shared/lib/image-config";
+import toast from "react-hot-toast";
 
-interface Props {
-  locations: Location[]
-}
-
-export default function TopNav({ locations }: Props) {
-
+export default function TopNav() {
+  const locations = useLocationStore((state) => state.locations);
   const setLocations = useLocationStore((state) => state.setLocations);
   const fetchData = useDataStore((state) => state.fetchData);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    // Define an async function inside the effect
+    const fetchLocations = async () => {
+      if (locations.length === 0) {
+        try {
+          const dbLocations = await getLocations();
+          setLocations(dbLocations);
+        } catch (e) {
+          toast.error("An error has occurred");
+        }
+      }
+    };
+
+    fetchLocations(); // Call it
+  }, [locations, setLocations]);
+
 
   useEffect(() => {
     setLocations(locations);
