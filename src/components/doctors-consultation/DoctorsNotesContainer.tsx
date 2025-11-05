@@ -14,34 +14,91 @@ import { postConsultation } from "@/lib/api/visit/doctors-consultation/postConsu
 
 interface Props {
   patient: QueuedPatient;
+  visitId: number;
 }
 
-export default function DoctorsNotesContainer({ patient }: Props) {
+export default function DoctorsNotesContainer({ patient, visitId }: Props) {
   const [patientInfo, setPatientInfo] = useState<PatientInfo | null>(null)
   const [notes, setNotes] = useState<string>("")
   const [prescription, setPrescription] = useState<string>("")
-  const [referralNeeded, setReferralNeeded] = useState<boolean>(true)
-  const [referral, setReferral] = useState<Referral | null>(null)
+  const [requireReferral, setRequireReferral] = useState<boolean>(false)
+  const [referral, setReferral] = useState<Referral | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const loadData = async () => {
-    try {
-      const data: Consultation | null = await getConsultation(patient.visit_id);
+  // Fetch patient info
+  useEffect(() => {
+    if (!patient?.patient_id) {
+      toast.error("Invalid patient ID provided!");
+      setPatientInfo(null);
+      return;
+    }
 
-      if (!data) {
-          toast("No data loaded")
-          return;
+    const fetchPatient = async () => {
+      try {
+        const data = await getPatient(patient.patient_id);
+        setPatientInfo(data);
+      } catch (err) {
+        toast.error("Failed to fetch patient info!");
+        console.error("Fetch patient error:", err);
+        setPatientInfo(null);
+      }
+    };
+
+    fetchPatient();
+  }, [patient?.patient_id]);
+
+  // Load consultation data (includes referral data from backend join)
+  useEffect(() => {
+    const loadConsultationData = async () => {
+      if (!patient?.visit_id) {
+        return;
       }
 
-      setNotes(data.notes);
-      setPrescription(data.prescription);
-      setReferralNeeded(data.requireReferral);
-      setReferral(data.referral)
+      setIsLoading(true);
+      try {
+        const data: Consultation | null = await getConsultation(patient.visit_id);
 
-      toast.success("Load success")
+        if (!data) {
+          // No consultation exists yet - set defaults
+          setNotes("");
+          setPrescription("");
+          setRequireReferral(false);
+          setReferral(null);
+          return;
+        }
 
+        // Backend returns consultation with joined referral data
+        setNotes(data.notes || "");
+        setPrescription(data.prescription || "");
+        setRequireReferral(data.requireReferral || false);
+        setReferral(data.referral || null);
+
+        toast.success("Data loaded successfully");
+      } catch (error) {
+        toast.error("Failed to load consultation data");
+        console.error("Error loading consultation:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadConsultationData();
+  }, [patient?.visit_id]);
+
+  // Reload consultation data after referral is saved
+  const reloadConsultationData = async () => {
+    if (!patient?.visit_id) return;
+
+    try {
+      const data: Consultation | null = await getConsultation(patient.visit_id);
+      if (data) {
+        setNotes(data.notes || "");
+        setPrescription(data.prescription || "");
+        setRequireReferral(data.requireReferral || false);
+        setReferral(data.referral || null);
+      }
     } catch (error) {
-        toast.error("Failed to load SEVA data");
-        console.error("Error loading SEVA:", error);
+      console.error("Error reloading consultation:", error);
     }
   };
 
@@ -49,46 +106,26 @@ export default function DoctorsNotesContainer({ patient }: Props) {
     const data: Consultation = {
       notes: notes,
       prescription: prescription,
-      requireReferral: referralNeeded,
-      referral: referral      // is ignored by postConsultation
+      requireReferral: requireReferral,
+      referral: referral
     }
     
     try {
-      const res = await postConsultation(data, patient.visit_id)
-      setNotes("");
-      setPrescription("");
-      setReferralNeeded(true);
-      toast.success("Save Success")
+      await postConsultation(data, patient.visit_id);
+      toast.success("Consultation saved successfully");
     } catch (error) {
-      toast.error("An error as occured")
+      toast.error("Failed to save consultation");
+      console.error("Save error:", error);
     }
   }
 
-  useEffect(() => {
-    if (!patient?.patient_id) {
-      toast.error("An error has occured")
-      console.log("Invalid patient/patient id")
-      setPatientInfo(null)
-      return;
-    }
-
-    const fetchPatient = async () => {
-      try {
-        const data = await getPatient(patient.patient_id!);
-        setPatientInfo(data);
-      } catch (err) {
-        toast.error("An error has occured")
-        console.error("Failed to fetch patient:", err);
-        setPatientInfo(null)
-      }
-    };
-
-    fetchPatient();
-  }, [patient]);
-
-  useEffect(() => {
-    loadData()
-  }, [])
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4 bg-beige-default px-4 py-2 rounded-md border-[1px] lg:w-[30%]">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4 bg-beige-default px-4 py-2 rounded-md border-[1px] lg:w-[30%]">
@@ -116,8 +153,8 @@ export default function DoctorsNotesContainer({ patient }: Props) {
             type="radio"
             name="referralNeeded"
             value="yes"
-            checked={referralNeeded === true}
-            onChange={() => setReferralNeeded(true)}
+            checked={requireReferral === true}
+            onChange={() => setRequireReferral(true)}
           />
           <p>Yes</p>
         </div>
@@ -127,22 +164,23 @@ export default function DoctorsNotesContainer({ patient }: Props) {
             type="radio"
             name="referralNeeded"
             value="no"
-            checked={referralNeeded === false}
-            onChange={() => setReferralNeeded(false)}
+            checked={requireReferral === false}
+            onChange={() => setRequireReferral(false)}
           />
           <p>No</p>
         </div>
       </div>
 
-      {patientInfo === undefined && (
+      {patientInfo === null && (
         <Loading />
       )}
       
-      {referralNeeded && patientInfo !== null && (
+      {requireReferral && patientInfo !== null && (
         <ReferralButton 
           patient={patient}
           patientInfo={patientInfo}
           retrievedReferral={referral}
+          onReferralSaved={reloadConsultationData}
         />
       )}
 

@@ -10,6 +10,13 @@ import { useLocationStore } from "@/stores/useLocationStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useDataStore } from "@/stores/useLocationDataStore";
+import toast from "react-hot-toast";
+import { exportReferralsByDate } from "@/lib/api/exportService";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
+import { DatePicker } from "@/components/ui/date-picker";
+import { formatDateToYYYYMMDD } from "@/components/ui/date-picker";
 
 export default function PatientListPage() {
 
@@ -21,6 +28,7 @@ export default function PatientListPage() {
 
   const [patients, setPatients] = useState<PatientInfo[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   const location_patients = useDataStore((state) => state.all_patients)
   const fetchData = useDataStore((state) => state.fetchData)
@@ -45,9 +53,11 @@ export default function PatientListPage() {
     setSearchTerm(term);
   }
   
+  // TODO
   const handleAddPatient = () => {
     console.log('Add new patient Clicked');
-    router.push('/patient-form?mode=new');
+    toast.error('Still not completed :(')
+    // router.push('/patient-form?mode=new');
   };
 
   const handleViewPatient = (patientId: number) => {
@@ -55,6 +65,23 @@ export default function PatientListPage() {
     router.push(`/patient-details?id=${patientId}`);
   }
 
+  const handleExport = (format: 'pdf' | 'excel') => {
+    if (!selectedDate) {
+      toast.error("Please select a date first!");
+      return;
+    }
+
+    const dateString = formatDateToYYYYMMDD(selectedDate);
+
+    const promise = exportReferralsByDate(dateString, format);
+    toast.promise(promise, {
+      loading: `Generating ${format.toUpperCase()}...`,
+      success: `Download starting!`,
+      error: (err) => err.message || 'Failed to export referrals.',
+    });
+  };
+
+  // TODO
   const handleDeletePatient = (patientId: number) => {
     if (window.confirm('Are you sure you want to delete this patient?')){
       // temporarily show that it was deleted here
@@ -64,13 +91,11 @@ export default function PatientListPage() {
   };
 
   useEffect(() => {
-    if (!location) return; // Only fetch if location is set
-    fetchData();
-  }, [location]);
+    if (location) fetchData(); // Only fetch if location is set
+  }, [location, fetchData]);
 
   useEffect(() => {
     setPatients(location_patients)
-    // call API according to locationId and dateOnly
   }, [location_patients])
 
   return (
@@ -83,12 +108,27 @@ export default function PatientListPage() {
           onSearchChange={handleSearchChange}
         />
 
-        <button
-          onClick={handleAddPatient}
-          className="ml-4 bg-green-500 hover:bg-green-600 text-white p-2 rounded-full transition"
-        >
-          <PlusIcon className="w-5 h-5"/>
-        </button>
+        <div className="flex items-center gap-2 ml-4">
+            {/* Date Picker and Export Button */}
+            <DatePicker date={selectedDate} setDate={setSelectedDate} />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="hover:bg-blue-500">
+                  <Download className="w-4 h-4" />
+                  {/* Export Referrals */}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => handleExport('pdf')}>As PDF</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('excel')}>As Excel</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Add Patient Button */}
+            <Button onClick={handleAddPatient} className="bg-green-500 hover:bg-green-600 rounded-full">
+              <PlusIcon className="w-8 h-8 text-black"/>
+            </Button>
+        </div>
       </div>
 
       <PatientTable

@@ -20,6 +20,7 @@ import { useUserStore } from "@/stores/useUserStore";
 import { createVisit } from "@/lib/api/visit/createVisit";
 import formatDate from "@/helper/format_date";
 import { useDataStore } from "@/stores/useLocationDataStore";
+import toast from "react-hot-toast";
 
 interface PatientFormProps {
     existingPatients: PatientInfo[];
@@ -123,17 +124,17 @@ export function PatientForm({ existingPatients, onSubmit, locationId }: PatientF
           phone_number: found.phone_number || "",
         });
       } else {
-        alert("No existing patient found with that name");
+        toast.error("No existing patient found with that name");
       }
     };
 
     const handleSubmit = async () => {
         if (!locationId || !token) {
-          alert("Location not selected or user not authenticated.");
+          toast.error("Location not selected or user not authenticated.");
           return;
         }
         if (!patientInfo.queue_no || !patientInfo.english_name || !patientInfo.sex) {
-        alert("Please fill in required fields: Queue Number, English Name, and Sex");
+        toast.error("Please fill in required fields: Queue Number, English Name, and Sex");
         return;
         }
 
@@ -183,8 +184,8 @@ export function PatientForm({ existingPatients, onSubmit, locationId }: PatientF
           });
           setActiveTab("patient-info");
         } catch (error) {
-          console.error("Submissio failed: ", error)
-          alert(`Error: ${error instanceof Error ? error.message : "Could not add patient to queue."}`);
+          console.error("Submission failed: ", error)
+          toast.error(`Error: ${error instanceof Error ? error.message : "Could not add patient to queue."}`);
         } finally {
           setIsSubmitting(false);
         }
@@ -237,7 +238,7 @@ export function PatientForm({ existingPatients, onSubmit, locationId }: PatientF
                       value={patientInfo.sex} 
                       onValueChange={(value) => setPatientInfo(prev => ({ ...prev, sex: value as "M" | "F" }))}
                     >
-                      <SelectTrigger className="!bg-white !text-black !placeholder-gray-400 !border-gray-300 mt-2">
+                      <SelectTrigger className={`${patientInfo.sex ? '!bg-white': '!bg-blue-500'} !text-black !placeholder-gray-400 !border-gray-300 mt-2`}>
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover border-border">

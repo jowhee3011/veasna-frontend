@@ -1,14 +1,26 @@
+// src/lib/types/consultation.ts
+
 export interface Referral {
-    referralDate: string; // Should be in "YYYY-MM-DD" format
-    referralType: string[];
-    illness: string;
-    duration: string;
-    reason: string;
+  id?: number;
+  visit_id?: number;
+  referralDate: string; 
+  referralType: string[]; 
+  illness: string;
+  duration: string;
+  reason: string;
+  last_updated_at?: string;
+  last_updated_by?: number;
+  created_at?: string;
 }
 
 export interface Consultation {
-    notes: string;
-    prescription: string;
-    requireReferral: boolean;
-    referral: Referral | null
+  id?: number;
+  visit_id?: number;
+  notes: string;
+  prescription: string;
+  requireReferral: boolean; 
+  referral: Referral | null; 
+  last_updated_at?: string;
+  last_updated_by?: number;
+  created_at?: string;
 }

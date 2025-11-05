@@ -5,55 +5,106 @@ import { postReferral } from "@/lib/api/visit/postReferral";
 import { Referral } from "@/lib/types/consultation";
 import { PatientInfo, QueuedPatient } from "@/lib/types/patient";
 import { useUserStore } from "@/stores/useUserStore";
-import { Ref, useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 interface Props {
   patient: QueuedPatient;
   patientInfo: PatientInfo;
   retrievedReferral: Referral | null
-  onClose: () => void; // Add this prop
+  onClose: () => void;
+  onReferralSaved?: () => void;
 }
 
-export default function ReferralForm({ patient, patientInfo, retrievedReferral, onClose }: Props) {
+export default function ReferralForm({ patient, patientInfo, retrievedReferral, onClose, onReferralSaved }: Props) {
+  // Get today's date in YYYY-MM-DD format as default
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
 
-  const [referralDate, setReferralDate] = useState<string>(retrievedReferral? retrievedReferral.referralDate : "")
-  const [referralType, setReferralType] = useState<string[]>(
-    retrievedReferral?.referralType ?? []
-  );
-  const [illness, setIllness] = useState<string>(retrievedReferral? retrievedReferral.illness : "")
-  const [duration, setDuration] = useState<string>(retrievedReferral ? retrievedReferral.duration : "")
-  const [reason, setReason] = useState<string>(retrievedReferral ? retrievedReferral.reason : "")
+  const [referralDate, setReferralDate] = useState<string>(getTodayDate());
+  const [referralType, setReferralType] = useState<string[]>([]);
+  const [illness, setIllness] = useState<string>("");
+  const [duration, setDuration] = useState<string>("");
+  const [reason, setReason] = useState<string>("");
 
-  const user = useUserStore((state) => state.user)
+  const user = useUserStore((state) => state.user);
+
+  // Update form fields when retrievedReferral changes
+  useEffect(() => {
+    if (retrievedReferral) {
+      setReferralDate(retrievedReferral.referralDate || getTodayDate());
+      setReferralType(retrievedReferral.referralType || []);
+      setIllness(retrievedReferral.illness || "");
+      setDuration(retrievedReferral.duration || "");
+      setReason(retrievedReferral.reason || "");
+    } else {
+      // Reset to defaults if no referral
+      setReferralDate(getTodayDate());
+      setReferralType([]);
+      setIllness("");
+      setDuration("");
+      setReason("");
+    }
+  }, [retrievedReferral]);
 
   const handleSave = async () => {
+    // Validation
+    if (!referralDate || referralDate.trim() === "") {
+      toast.error("Please select a referral date");
+      return;
+    }
+
+    if (referralType.length === 0) {
+      toast.error("Please select at least one referral type");
+      return;
+    }
+
+    if (!illness || illness.trim() === "") {
+      toast.error("Please enter the patient's illness");
+      return;
+    }
+
+    if (!duration || duration.trim() === "") {
+      toast.error("Please enter the illness duration");
+      return;
+    }
+
+    if (!reason || reason.trim() === "") {
+      toast.error("Please enter the reason for referral");
+      return;
+    }
+
     const data: Referral = {
       referralDate: referralDate,
       referralType: referralType,
       illness: illness,
       duration: duration,
       reason: reason,
-    }
+    };
     
     try {
-      const res = await postReferral(data, patient.visit_id)
-      setReferralDate("");
-      setReferralType([]);
-      setIllness("");
-      setDuration("")
-      setReason("")
-      toast.success("Save Success")
+      await postReferral(data, patient.visit_id);
+      toast.success("Referral saved successfully");
+      
+      // Reload the consultation data to get the updated referral
+      if (onReferralSaved) {
+        onReferralSaved();
+      }
+      
+      onClose();
     } catch (error) {
-      toast.error("An error as occured")
+      toast.error("Failed to save referral");
+      console.error("Save referral error:", error);
     }
-  }
+  };
 
   return (
     <div className="px-6 py-4 max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold text-center mb-6">Referral</h2>
 
-      <form className="flex flex-col space-y-6">
+      <form className="flex flex-col space-y-6" onSubmit={(e) => e.preventDefault()}>
         {/* Date */}
         <div>
           <label className="flex items-center gap-x-4 font-medium">
@@ -63,6 +114,7 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
               className="border p-2 rounded flex-1 bg-white-default"
               value={referralDate}
               onChange={e => setReferralDate(e.target.value)}
+              required
             />
           </label>
         </div>
@@ -89,8 +141,8 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
                     const { checked, value } = e.target;
                     setReferralType((prev) => 
                       checked 
-                        ? [...prev, value]                     // add if checked
-                        : prev.filter((item) => item !== value) // remove if unchecked
+                        ? [...prev, value]
+                        : prev.filter((item) => item !== value)
                     );
                   }}
                 />
@@ -104,7 +156,7 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
         <div>
           <p className="mb-2 font-medium">To whomever it may concern</p>
           <div className="grid grid-cols-2 gap-4">
-            <label className="flex items-center gap-x-2"> {/* row layout */}
+            <label className="flex items-center gap-x-2">
               <span>Patient Name:</span>
               <p>{patientInfo.english_name}</p>
             </label>
@@ -128,17 +180,19 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
           <p>
             The patient above has been suffering from{" "}
             <input
-              className="bg-white-default border rounded p-1"
+              className="border rounded p-1"
               placeholder="illness"
               value={illness}
               onChange={e => setIllness(e.target.value)}
+              required
             />{" "}
             for{" "}
             <input
-              className="bg-white-default border rounded p-1"
+              className="border rounded p-1"
               placeholder="duration"
               value={duration}
               onChange={e => setDuration(e.target.value)}
+              required
             />
           </p>
         </div>
@@ -147,9 +201,10 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
         <div>
           <p className="font-medium mb-2">Reason for referral:</p>
           <textarea 
-            className="bg-white-default border rounded p-2 w-full h-24" 
+            className="bg-white text-black border rounded p-2 w-full h-24" 
             value={reason}
             onChange={e => setReason(e.target.value)}
+            required
           />
         </div>
 
@@ -162,19 +217,16 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
           <button
             type="button"
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            onClick={() => {
-              handleSave()
-              onClose()
-            }}
+            onClick={handleSave}
           >
             Save
           </button>
           <button
             type="button"
             className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-            onClick={e => onClose()}
+            onClick={onClose}
           >
-            Print
+            Cancel
           </button>
         </div>
       </form>

@@ -15,14 +15,17 @@ interface Props {
   retrievedReferral: Referral | null;
   setShowPopUp: Dispatch<SetStateAction<boolean>>;
   showPopUp: boolean;
+  onReferralSaved?: () => void;
 }
+
 
 export default function ReferralPopUp({ 
   patient, 
   patientInfo, 
   retrievedReferral, 
   setShowPopUp,
-  showPopUp 
+  showPopUp,
+  onReferralSaved
 }: Props) {
   return (
     <Dialog open={showPopUp} onOpenChange={setShowPopUp}>
@@ -35,6 +38,7 @@ export default function ReferralPopUp({
           patientInfo={patientInfo}
           retrievedReferral={retrievedReferral}
           onClose={() => setShowPopUp(false)}
+          onReferralSaved={onReferralSaved}
         />
       </DialogContent>
     </Dialog>

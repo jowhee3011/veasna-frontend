@@ -10,7 +10,7 @@ export type PatientInfo = {
     sex?: "M" | "F" | "";
     address?: string | null;
     phone_number?: string | null;
-    lastUpdated: string;
+    last_updated_at: string;
 }
 
 export type QueuedPatient = {

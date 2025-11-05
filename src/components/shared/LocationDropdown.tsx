@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLocationStore } from '@/stores/useLocationStore';
 import { LocationIcon, PlusIcon, TrashIcon } from '@/assets/icons';
 import { Location } from '@/lib/types/location';
+import toast from 'react-hot-toast';
 
 export default function LocationDropdown() {
   const { 
@@ -21,6 +22,15 @@ export default function LocationDropdown() {
   const [newLocationName, setNewLocationName] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!currentLocation && locations.length > 0) {
+      toast('Please select a location to continue', {
+        icon: '📍',
+        duration: 4000,
+      });
+    }
+  }, []); // Run once on mount
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -47,16 +57,25 @@ export default function LocationDropdown() {
   const handleLocationSelect = (location: Location) => {
     if (!isEditMode) {
       setCurrentLocation(location);
+      toast.success(`Switched to ${location.name}`, {
+        icon: '📍',
+      });
       setIsOpen(false);
     }
   };
 
   const handleDeleteLocation = async (locationId: number, e: React.MouseEvent) => {
     e.stopPropagation();
+    const locationToDelete = locations.find(loc => loc.id === locationId);
+    const locationName = locationToDelete?.name || 'Location';
     try {
       await removeLocation(locationId);
+      toast.success(`"${locationName}" deleted successfully`, {
+        icon: '🗑️',
+      });
     } catch (error) {
       console.error('Failed to delete location:', error);
+      toast.error('Failed to delete location. Please try again.')
       // Error is already set in the store, no need to handle it here
     }
   };
@@ -76,11 +95,15 @@ export default function LocationDropdown() {
     if (newLocationName.trim()) {
       try {
         await addLocation(newLocationName.trim());
+        toast.success(`Location "${newLocationName.trim()}" added successfully`, {
+          icon: '✓',
+        })
         setNewLocationName('');
         setShowAddLocationInput(false);
         setError(null); 
       } catch (error) {
         console.error('Failed to create location:', error);
+        toast.error('Failed to add location. Please try again.');
       }
     }
   };

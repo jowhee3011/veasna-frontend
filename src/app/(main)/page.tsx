@@ -33,7 +33,7 @@ export default function HomePage() {
           <div className="flex-1 min-w-[600px] flex">
             <PatientForm
               existingPatients={all_patients}
-              onSubmit={() => {}} // No longer needed since store handles updates
+              onSubmit={() => {}} 
               locationId={location?.id}
             />
           </div>

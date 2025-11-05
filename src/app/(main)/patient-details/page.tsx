@@ -15,6 +15,11 @@ import { getVisit } from "@/lib/api/visit/getVisit";
 import { updatePatient } from "@/lib/api/patient/updatePatient";
 import formatDate from "@/helper/format_date";
 
+// import { exportPatientReferrals } from "@/lib/api/exportService";
+// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+// import { Download } from "lucide-react";
+import toast from "react-hot-toast";
+
 interface Visit {
   visit_id: number;
   queue_no: string;
@@ -56,6 +61,7 @@ const DataField = ({ label, value }: { label: string; value: any }) => (
 );
 
 export default function PatientDetailsPage() {
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const patientId = Number(searchParams.get('id'));
@@ -132,9 +138,10 @@ export default function PatientDetailsPage() {
           setPatientData({ ...patientData, patient: result.data.patient });
         }
         console.log('Patient updated successfully');
+        toast.success('Patient updated successfully');
       } else {
         console.error('Failed to update patient:', result.error);
-        alert(`Failed to update patient: ${result.error}`);
+        toast.error(`Failed to update patient: ${result.error}`);
         setEditedPatient(patientData?.patient || null);
       }
     }
@@ -163,6 +170,15 @@ export default function PatientDetailsPage() {
     return monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())
       ? age - 1 : age;
   };
+
+  // const handleExport = (format: 'pdf' | 'excel') => {
+  //   const promise = exportPatientReferrals(patientId, format);
+  //   toast.promise(promise, {
+  //       loading: `Generating ${format.toUpperCase()}...`,
+  //       success: 'Download starting!',
+  //       error: (err) => err.message || 'Failed to export referrals.',
+  //   });
+  // };
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-screen">Loading patient details...</div>;
@@ -200,6 +216,25 @@ export default function PatientDetailsPage() {
             <EditIcon className="w-4 h-4 mr-2 text-white"/>
             {isEditing ? 'Save Changes' : 'Edit Patient'}
           </Button>
+          
+          {/* Export button */}
+          {/* <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <Download className="w-4 h-4 mr-2" />
+                Export Referrals
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => handleExport('pdf')}>
+                Export as PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('excel')}>
+                Export as Excel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu> */}
+
         </div>
       </div>
 
@@ -310,7 +345,7 @@ export default function PatientDetailsPage() {
                 <div>
                   <label className="text-sm font-medium text-gray-500">Last Updated</label>
                   <p className="mt-1 text-sm">
-                    {patient.lastUpdated ? new Date(patient.lastUpdated).toLocaleString() : 'N/A'}
+                    {patient.last_updated_at ? new Date(patient.last_updated_at).toLocaleString() : 'N/A'}
                   </p>
                 </div>
               </div>
@@ -358,6 +393,7 @@ export default function PatientDetailsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3 max-h-[calc(100vh-350px)] overflow-y-auto">
+                  {/* Empty visits view */}
                   {filteredVisits.length === 0 ? (
                     <p className="text-center text-gray-500 py-8">
                       {dateSearch ? 'No visits found for this date' : 'No visits recorded'}

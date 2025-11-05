@@ -34,8 +34,8 @@ export function PatientTableRow({ patient, onViewPatient, onDeletePatient}: Pati
                 <td className="px-4 py-3 text-sm text-gray-900">{patient.address}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{patient.face_id}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">
-                    {patient.lastUpdated
-                        ? new Date(patient.lastUpdated).toLocaleString()
+                    {patient.last_updated_at
+                        ? new Date(patient.last_updated_at).toLocaleString()
                         : "-"}
                 </td>
                 <td className="py-3 text-sm text-gray-900">
