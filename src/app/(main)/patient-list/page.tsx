@@ -17,10 +17,13 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker";
 import { formatDateToYYYYMMDD } from "@/components/ui/date-picker";
+import { deletePatient } from "@/lib/api/patient/deletePatient";
+import { useUserStore } from "@/stores/useUserStore";
 
 export default function PatientListPage() {
 
   const router = useRouter();
+  const token = useUserStore((state) => state.user?.token);
 
   const location: Location | null = useLocationStore((state) => state.currentLocation)
   const date : Date = new Date();
@@ -81,12 +84,36 @@ export default function PatientListPage() {
     });
   };
 
-  // TODO
-  const handleDeletePatient = (patientId: number) => {
-    if (window.confirm('Are you sure you want to delete this patient?')){
-      // temporarily show that it was deleted here
-      setPatients(prevPatients => prevPatients.filter(patient => patient.id !== patientId))
-      console.log('Delete patient Clicked:', patientId);      
+  const handleDeletePatient = async (patientId: number) => {
+    if (!token) {
+      toast.error("You must be logged in to delete patients");
+      return;
+    }
+
+    // Find patient name for confirmation message
+    const patient = patients.find(p => p.id === patientId);
+    const patientName = patient?.english_name || `Patient ${patientId}`;
+
+    if (window.confirm(
+      `⚠️ WARNING: This will permanently delete ${patientName} and ALL associated data:\n` +
+      `• All visits\n` +
+      `• All consultations and referrals\n` +
+      `• All medical records\n\n` +
+      `This action CANNOT be undone!\n\n` +
+      `Are you absolutely sure?`
+    )) {
+      const result = await deletePatient(patientId, token);
+      
+      if (result.success) {
+        // Remove from local state
+        setPatients(prevPatients => prevPatients.filter(p => p.id !== patientId));
+        toast.success(`${patientName} deleted successfully`);
+        
+        // Optionally refresh data from server
+        fetchData();
+      } else {
+        toast.error(`Failed to delete patient: ${result.error}`);
+      }
     }
   };
 
