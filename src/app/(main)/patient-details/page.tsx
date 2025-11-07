@@ -14,6 +14,8 @@ import { getPatient } from "@/lib/api/patient/getPatients";
 import { getVisit } from "@/lib/api/visit/getVisit";
 import { updatePatient } from "@/lib/api/patient/updatePatient";
 import formatDate from "@/helper/format_date";
+import toast from "react-hot-toast";
+import { BodyChartDisplay } from "@/components/patient-details/BodyChartDisplay";
 
 interface Visit {
   visit_id: number;
@@ -56,6 +58,7 @@ const DataField = ({ label, value }: { label: string; value: any }) => (
 );
 
 export default function PatientDetailsPage() {
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const patientId = Number(searchParams.get('id'));
@@ -132,9 +135,10 @@ export default function PatientDetailsPage() {
           setPatientData({ ...patientData, patient: result.data.patient });
         }
         console.log('Patient updated successfully');
+        toast.success('Patient updated successfully');
       } else {
         console.error('Failed to update patient:', result.error);
-        alert(`Failed to update patient: ${result.error}`);
+        toast.error(`Failed to update patient: ${result.error}`);
         setEditedPatient(patientData?.patient || null);
       }
     }
@@ -310,7 +314,7 @@ export default function PatientDetailsPage() {
                 <div>
                   <label className="text-sm font-medium text-gray-500">Last Updated</label>
                   <p className="mt-1 text-sm">
-                    {patient.lastUpdated ? new Date(patient.lastUpdated).toLocaleString() : 'N/A'}
+                    {patient.last_updated_at ? new Date(patient.last_updated_at).toLocaleString() : 'N/A'}
                   </p>
                 </div>
               </div>
@@ -358,6 +362,7 @@ export default function PatientDetailsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3 max-h-[calc(100vh-350px)] overflow-y-auto">
+                  {/* Empty visits view */}
                   {filteredVisits.length === 0 ? (
                     <p className="text-center text-gray-500 py-8">
                       {dateSearch ? 'No visits found for this date' : 'No visits recorded'}
@@ -531,16 +536,8 @@ export default function PatientDetailsPage() {
                           
                           {visitDetails.physiotherapy.painpoints?.length > 0 && (
                             <div>
-                              <p className="text-sm font-medium text-gray-500 mb-3">Pain Points</p>
-                              <div className="space-y-2">
-                                {visitDetails.physiotherapy.painpoints.map((point: any, index: number) => (
-                                  <div key={point.id} className="bg-gray-50 p-3 rounded-md border">
-                                    <p className="text-sm">
-                                      <span className="font-medium">Point {index + 1}:</span> X: {point.x_coord.toFixed(2)}, Y: {point.y_coord.toFixed(2)}
-                                    </p>
-                                  </div>
-                                ))}
-                              </div>
+                              <p className="text-sm font-medium text-gray-500 mb-3">Body Chart - Pain Points</p>
+                              <BodyChartDisplay painpoints={visitDetails.physiotherapy.painpoints} />
                             </div>
                           )}
                         </div>

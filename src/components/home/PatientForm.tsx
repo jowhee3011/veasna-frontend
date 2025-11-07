@@ -20,6 +20,8 @@ import { useUserStore } from "@/stores/useUserStore";
 import { createVisit } from "@/lib/api/visit/createVisit";
 import formatDate from "@/helper/format_date";
 import { useDataStore } from "@/stores/useLocationDataStore";
+import { searchPatient } from "@/lib/api/patient/searchPatient";
+import toast from "react-hot-toast";
 
 interface PatientFormProps {
     existingPatients: PatientInfo[];
@@ -71,6 +73,9 @@ export function PatientForm({ existingPatients, onSubmit, locationId }: PatientF
         notes: ""
     })
 
+    const [searchResults, setSearchResults] = useState<PatientInfo[]>([]);
+    const [showSearchResults, setShowSearchResults] = useState(false);
+
     const calculateAge = () => {
         if (patientInfo.date_of_birth) {
             const today = new Date();
@@ -101,39 +106,79 @@ export function PatientForm({ existingPatients, onSubmit, locationId }: PatientF
         }
       };
 
-    const checkExistingPatient = () => {
-      // Use either English or Khmer name for search
-      const name = patientInfo.english_name?.trim() || patientInfo.khmer_name?.trim();
-      if (!name) return;
-
-      const found = existingPatients.find((p) => {
-        const engName = p.english_name?.toLowerCase() || "";
-        const khmerName = p.khmer_name?.toLowerCase() || "";
-        return engName.includes(name.toLowerCase()) || khmerName.includes(name.toLowerCase());
-      });
-
-      if (found) {
-        setPatientInfo({
-          face_id: found.face_id.toString(),
-          english_name: found.english_name || "",
-          khmer_name: found.khmer_name || "",
-          date_of_birth: formatDate(found.date_of_birth) || "",
-          sex: found.sex,
-          address: found.address || "",
-          phone_number: found.phone_number || "",
-        });
-      } else {
-        alert("No existing patient found with that name");
-      }
+      const checkExistingPatient = async () => {
+        if (!token) {
+          toast.error("You must be logged in to search");
+          return;
+        }
+      
+        // Use English name first, fallback to Khmer name
+        const searchName = patientInfo.english_name?.trim() || patientInfo.khmer_name?.trim();
+        
+        if (!searchName) {
+          toast.error("Please enter a name to search");
+          return;
+        }
+      
+        try {
+          const result = await searchPatient(searchName, token);
+      
+          if (!result.found || result.count === 0) {
+            toast.error("No existing patient found with that name");
+            setSearchResults([]);
+            setShowSearchResults(false);
+            return;
+          }
+      
+          // If exactly one match, auto-fill
+          if (result.count === 1) {
+            const found = result.patients[0];
+            setPatientInfo({
+              face_id: found.face_id.toString(),
+              english_name: found.english_name || "",
+              khmer_name: found.khmer_name || "",
+              date_of_birth: found.date_of_birth || "",
+              sex: found.sex || "",
+              address: found.address || "",
+              phone_number: found.phone_number || "",
+              queue_no: patientInfo.queue_no, // Keep queue number
+            });
+            toast.success(`Found patient: ${found.english_name}`);
+            setShowSearchResults(false);
+          } else {
+            // Multiple matches - show selection dialog
+            setSearchResults(result.patients);
+            setShowSearchResults(true);
+            toast.success(`Found ${result.count} matching patients`);
+          }
+        } catch (error) {
+          toast.error("Failed to search for patient");
+          console.error("Search error:", error);
+        }
     };
+
+    const selectPatient = (patient: PatientInfo) => {
+      setPatientInfo({
+        face_id: patient.face_id.toString(),
+        english_name: patient.english_name || "",
+        khmer_name: patient.khmer_name || "",
+        date_of_birth: patient.date_of_birth || "",
+        sex: patient.sex || "",
+        address: patient.address || "",
+        phone_number: patient.phone_number || "",
+        queue_no: patientInfo.queue_no,
+      });
+      setShowSearchResults(false);
+      toast.success(`Selected patient: ${patient.english_name}`);
+    }
 
     const handleSubmit = async () => {
         if (!locationId || !token) {
-          alert("Location not selected or user not authenticated.");
+          toast.error("Location not selected or user not authenticated.");
           return;
         }
         if (!patientInfo.queue_no || !patientInfo.english_name || !patientInfo.sex) {
-        alert("Please fill in required fields: Queue Number, English Name, and Sex");
+        toast.error("Please fill in required fields: Queue Number, English Name, and Sex");
         return;
         }
 
@@ -183,8 +228,8 @@ export function PatientForm({ existingPatients, onSubmit, locationId }: PatientF
           });
           setActiveTab("patient-info");
         } catch (error) {
-          console.error("Submissio failed: ", error)
-          alert(`Error: ${error instanceof Error ? error.message : "Could not add patient to queue."}`);
+          console.error("Submission failed: ", error)
+          toast.error(`Error: ${error instanceof Error ? error.message : "Could not add patient to queue."}`);
         } finally {
           setIsSubmitting(false);
         }
@@ -237,7 +282,7 @@ export function PatientForm({ existingPatients, onSubmit, locationId }: PatientF
                       value={patientInfo.sex} 
                       onValueChange={(value) => setPatientInfo(prev => ({ ...prev, sex: value as "M" | "F" }))}
                     >
-                      <SelectTrigger className="!bg-white !text-black !placeholder-gray-400 !border-gray-300 mt-2">
+                      <SelectTrigger className={`${patientInfo.sex ? '!bg-white': '!bg-blue-500'} !text-black !placeholder-gray-400 !border-gray-300 mt-2`}>
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent className="bg-popover border-border">
@@ -532,6 +577,51 @@ export function PatientForm({ existingPatients, onSubmit, locationId }: PatientF
               {isSubmitting ? "Submitting..." : "Submit & Add to Queue"}
             </Button>
           </div>
+
+          {showSearchResults && searchResults.length > 0 && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-auto">
+                <h3 className="text-xl font-bold mb-4">Select Patient</h3>
+                <p className="text-gray-600 mb-4">
+                  Found {searchResults.length} patients matching your search:
+                </p>
+                <div className="space-y-2">
+                  {searchResults.map((patient) => (
+                    <div
+                      key={patient.id}
+                      onClick={() => selectPatient(patient)}
+                      className="p-4 border rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold">{patient.english_name}</p>
+                          <p className="text-sm text-gray-600">{patient.khmer_name}</p>
+                          <p className="text-sm text-gray-500">
+                            DOB: {patient.date_of_birth} • Sex: {patient.sex === 'M' ? 'Male' : 'Female'}
+                          </p>
+                        </div>
+                        <div className="text-right text-sm text-gray-500">
+                          <p>Face ID: {patient.face_id}</p>
+                          {patient.phone_number && <p>📞 {patient.phone_number}</p>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-end mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowSearchResults(false);
+                      setSearchResults([]);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     );

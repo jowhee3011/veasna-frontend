@@ -9,9 +9,15 @@ interface Props {
   patient: QueuedPatient;
   patientInfo: PatientInfo;
   retrievedReferral: Referral | null;
+  onReferralSaved?: () => void;
 }
 
-export default function ReferralButton({ patient, patientInfo, retrievedReferral }: Props) {
+export default function ReferralButton({ 
+  patient,
+  patientInfo, 
+  retrievedReferral,
+  onReferralSaved
+}: Props) {
   const [showPopUp, setShowPopUp] = useState(false);
   
   return (
@@ -29,6 +35,7 @@ export default function ReferralButton({ patient, patientInfo, retrievedReferral
         retrievedReferral={retrievedReferral}
         setShowPopUp={setShowPopUp}
         showPopUp={showPopUp}
+        onReferralSaved={onReferralSaved}
       />
     </>
   );

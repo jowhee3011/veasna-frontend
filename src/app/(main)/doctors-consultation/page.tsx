@@ -26,7 +26,7 @@ export default function DoctorsConsultation() {
       <div className="flex flex-col gap-2 mt-3 lg:w-full lg:flex-row lg:gap-4 lg:justify-evenly">
         <PatientContainer selectedPatient = {selectedPatient}/>
         <TriageContainer selectedPatient = {selectedPatient}/>
-        <DoctorsNotesContainer patient={selectedPatient} />
+        <DoctorsNotesContainer patient={selectedPatient} visitId={selectedPatient.visit_id} />
       </div>
     </div>
   )
