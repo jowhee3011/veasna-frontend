@@ -68,11 +68,6 @@ export default function PatientListPage() {
   const handleSearchChange = (term: string) => {
     setSearchTerm(term);
   }
-  
-  const handleAddPatient = () => {
-    console.log('Add new patient Clicked');
-    router.push('/patient-form?mode=new');
-  };
 
   const handleViewPatient = (patientId: number) => {
     console.log('Viewing Patient, ', patientId);
@@ -96,13 +91,6 @@ export default function PatientListPage() {
           placeholder= "Search for Patient by English Name or Khmer Name"
           onSearchChange={handleSearchChange}
         />
-
-        <button
-          onClick={handleAddPatient}
-          className="ml-4 bg-green-500 hover:bg-green-600 text-white p-2 rounded-full transition"
-        >
-          <PlusIcon className="w-5 h-5"/>
-        </button>
       </div>
 
       <PatientTable
