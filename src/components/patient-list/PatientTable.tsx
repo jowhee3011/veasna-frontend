@@ -55,7 +55,7 @@ export function PatientTable({ patients, onViewPatient, onDeletePatient }: Patie
 
       {patients.length === 0 && (
         <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
-          <PixelMascot pose="thinking" size={72} energy={0.9} />
+          <PixelMascot pose="thinking" size={72} />
           <h3 className="text-lg font-bold text-foreground">No patients found</h3>
           <p className="max-w-[42ch] text-sm text-muted-foreground">
             Nothing matches that search. Check the spelling, or switch to a different screening

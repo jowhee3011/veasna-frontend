@@ -19,7 +19,7 @@ import { PatientFormData } from "@/lib/types/patient";
 import { useUserStore } from "@/stores/useUserStore";
 import { createVisit } from "@/lib/api/visit/createVisit";
 import formatDate from "@/helper/format_date";
-import { useLocationDataStore } from "@/stores/useLocationDataStore";
+import { calculateAge } from "@/helper/calculate_age";
 
 interface PatientFormProps {
     existingPatients: PatientInfo[];
@@ -70,18 +70,9 @@ export function PatientForm({ existingPatients, onSubmit, locationId }: PatientF
         notes: ""
     })
 
-    const calculateAge = () => {
-        if (patientInfo.date_of_birth) {
-            const today = new Date();
-            const birthDate = new Date(patientInfo.date_of_birth);
-            const age = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
-
-            const calculatedAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())
-                ? age - 1 : age;
-            
-            setPatientInfo(prev => ({ ...prev, age: calculatedAge.toString() }));
-        }
+    const fillAgeFromDob = () => {
+        const age = calculateAge(patientInfo.date_of_birth);
+        if (age !== null) setPatientInfo(prev => ({ ...prev, age: age.toString() }));
     };
 
     const calculateBMI = () => {
@@ -290,7 +281,7 @@ export function PatientForm({ existingPatients, onSubmit, locationId }: PatientF
                       />
                       <Button 
                         type="button" 
-                        onClick={calculateAge}
+                        onClick={fillAgeFromDob}
                         className={`${
                           patientInfo.date_of_birth 
                             ? "bg-primary text-primary-foreground hover:opacity-90 border-primary"

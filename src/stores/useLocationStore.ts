@@ -36,7 +36,7 @@ interface LocationState {
 
 export const useLocationStore = create<LocationState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       locations: [],
       currentLocation: null,
       hasHydrated: false,

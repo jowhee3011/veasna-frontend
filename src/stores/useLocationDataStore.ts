@@ -14,7 +14,7 @@ interface LocationDataStore {
   fetchData: () => Promise<void>;
 }
 
-export const useLocationDataStore = create<LocationDataStore>((set, get) => ({
+export const useLocationDataStore = create<LocationDataStore>((set) => ({
   all_patients: [],
   todays_patients: [],
   drugs: [],

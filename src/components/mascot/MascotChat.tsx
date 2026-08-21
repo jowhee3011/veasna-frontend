@@ -200,8 +200,7 @@ export default function MascotChat() {
           open ? "scale-90 opacity-0 pointer-events-none" : ""
         }`}
       >
-        <span className="absolute inset-0 rounded-full animate-ring" aria-hidden />
-        <PixelMascot pose="idle" size={52} energy={1} />
+        <PixelMascot pose="idle" size={52} animated />
         {!open && patients.length > 0 && (
           <span className="absolute -right-1 -top-1 min-w-6 rounded-full bg-[var(--lantern)] px-1.5 py-0.5 text-[11px] font-bold text-[var(--lantern-foreground)] shadow-[var(--shadow-sm)]">
             {patients.length}
@@ -219,7 +218,7 @@ export default function MascotChat() {
           {/* Header */}
           <header className="relative flex items-center gap-3 border-b border-border bg-[var(--primary-soft)] px-4 py-3">
             <div className="relative">
-              <PixelMascot pose={thinking ? "thinking" : pose} size={44} energy={thinking ? 1.6 : 1} />
+              <PixelMascot pose={thinking ? "thinking" : pose} size={44} animated energy={thinking ? 1.6 : 1} />
             </div>
             <div className="min-w-0 flex-1">
               <p className="font-semibold leading-tight text-[var(--primary-strong)]">Veasna</p>
@@ -304,7 +303,7 @@ export default function MascotChat() {
 
             {thinking && (
               <div className="flex items-center gap-2.5 animate-fade-in">
-                <PixelMascot pose="thinking" size={28} glow={false} energy={1.8} />
+                <PixelMascot pose="thinking" size={28} glow={false} animated energy={1.8} />
                 <span className="flex gap-1 rounded-2xl rounded-tl-sm bg-muted px-3.5 py-3">
                   {[0, 1, 2].map((i) => (
                     <span

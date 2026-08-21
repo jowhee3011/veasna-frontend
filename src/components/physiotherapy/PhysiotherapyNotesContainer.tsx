@@ -46,7 +46,7 @@ export default function PhysiotherapyNotesContainer({ patient }: Props) {
         painpoints: painpoints,
       }
 
-      const res = await postPhysiotherapy(data, patient.visit_id)
+      await postPhysiotherapy(data, patient.visit_id)
       setNotes("")
       setPainpoints([])
       toast.success("Save Success")

@@ -18,7 +18,7 @@ interface Props {
     mode: string;
 }
 
-export default function PatientTabs({ patient, onUpdatePatient, onSave, onCancel, isSaving, mode }: Props) {
+export default function PatientTabs({ patient, onUpdatePatient, onSave, onCancel, mode }: Props) {
 
     const [activeTab, setActiveTab] = useState<PatientListTab>(PATIENTINFO_TAB);
 

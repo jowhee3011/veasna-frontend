@@ -56,7 +56,7 @@ export default function StationProgress({
         style={{ left: `${mascotLeft}%` }}
         aria-hidden
       >
-        <PixelMascot pose={status?.nextStation ? "working" : "cheer"} size={38} energy={1.2} />
+        <PixelMascot pose={status?.nextStation ? "working" : "cheer"} size={38} animated energy={1.2} />
       </div>
 
       <div className="relative flex items-start pt-9">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { calculateAge } from "@/helper/calculate_age";
 
 interface PatientData {
     queue_no?: string;
@@ -49,32 +50,19 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
         };
     }
 
-    // Helper function to calculate age
-    const calculateAge = () => {
+    // Fills the age field from a dd/mm/yyyy date of birth. The parsing lives
+    // here because this form takes the date as free text; the year arithmetic
+    // is shared with every other screen that shows an age.
+    const fillAgeFromDob = () => {
         if (!patient.date_of_birth) return;
 
-        const parts = patient.date_of_birth.split('/');
-        if (parts.length === 3) {
-            const day = parseInt(parts[0]);
-            const month = parseInt(parts[1]);
-            const year = parseInt(parts[2]);
+        const [day, month, year] = patient.date_of_birth.split('/').map(Number);
+        if (!day || !month || !year || year <= 1900) return;
 
-            if (day && month && year && year > 1900) {
-                // javascript months are 0 index (ie January = 0)
-                const birthDate = new Date(year, month - 1, day);
-                const today = new Date();
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const monthDiff = today.getMonth() - birthDate.getMonth();
-
-                // handle age if birthday yet to pass
-                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
-
-                if (age >= 0 && age < 150) {
-                    onUpdatePatient({age: age.toString() });
-                }
-            }
+        // javascript months are 0 index (ie January = 0)
+        const age = calculateAge(new Date(year, month - 1, day));
+        if (age !== null && age < 150) {
+            onUpdatePatient({ age: age.toString() });
         }
     }
 
@@ -150,7 +138,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                         />
                         <button 
                             type='button'
-                            onClick={calculateAge}
+                            onClick={fillAgeFromDob}
                             className='px-3 py-2 bg-[var(--primary)] text-sm rounded-md hover:bg-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-blue-500 text-white'
                         >
                             Calculate Age

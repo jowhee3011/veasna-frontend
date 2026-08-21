@@ -94,16 +94,16 @@ function splice(row: string, inner: Inner): string {
   return row.slice(0, INNER_START) + inner + row.slice(INNER_START + INNER_WIDTH);
 }
 
-export type Expression = keyof typeof EYES;
-export type Mouth = keyof typeof MOUTHS;
+type Expression = keyof typeof EYES;
+type Mouth = keyof typeof MOUTHS;
 
-export interface FrameSpec {
+interface FrameSpec {
   eyes: Expression;
   mouth: Mouth;
 }
 
 /** Named poses the rest of the app refers to. */
-export const POSES = {
+const POSES = {
   idle:     { eyes: "open",     mouth: "smile" },
   blink:    { eyes: "blink",    mouth: "smile" },
   talking:  { eyes: "open",     mouth: "talk" },
@@ -118,7 +118,7 @@ export const POSES = {
 export type PoseName = keyof typeof POSES;
 
 /** Build the full 20x20 grid for a pose. */
-export function buildFrame(pose: PoseName): string[] {
+function buildFrame(pose: PoseName): string[] {
   const spec = POSES[pose];
   const [upper, lower] = EYES[spec.eyes];
   const rows = BODY.slice();

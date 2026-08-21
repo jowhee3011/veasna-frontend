@@ -61,7 +61,7 @@ export default function TopNav() {
       <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-6 px-5">
         {/* Brand */}
         <Link href="/" className="flex shrink-0 items-center gap-2.5" title="Veasna — home">
-          <PixelMascot pose="idle" size={34} energy={1} label="Veasna mascot" />
+          <PixelMascot pose="idle" size={34} label="Veasna mascot" />
           <span className="hidden text-lg font-bold tracking-tight sm:block">
             Veasna
           </span>

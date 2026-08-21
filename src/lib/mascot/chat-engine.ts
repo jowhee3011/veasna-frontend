@@ -12,6 +12,7 @@
  */
 
 import type { QueuedPatient } from "@/lib/types/patient";
+import { byQueueNumber } from "@/helper/queue_order";
 import {
   STATIONS,
   STATION_BY_ID,
@@ -138,10 +139,6 @@ function resolvePatients(raw: string, text: string, ctx: ChatContext): QueuedPat
   }
   return [];
 }
-
-/** Earliest-registered first, matching how the queue is worked through. */
-const byArrival = (a: QueuedPatient, b: QueuedPatient) =>
-  (a.queue_no || "").localeCompare(b.queue_no || "", undefined, { numeric: true });
 
 /* ------------------------------------------------------------------ *
  * Intents
@@ -282,7 +279,7 @@ const INTENTS: Intent[] = [
           if (!st) return false;
           return st.stations.find((s) => s.id === station)?.state !== "done";
         })
-        .sort(byArrival);
+        .sort(byQueueNumber);
 
       if (!waiting.length) {
         return {
@@ -314,7 +311,7 @@ const INTENTS: Intent[] = [
       const label = STATION_BY_ID[station].label;
       const done = ctx.patients
         .filter((p) => ctx.statuses[p.visit_id]?.stations.find((s) => s.id === station)?.state === "done")
-        .sort(byArrival);
+        .sort(byQueueNumber);
 
       if (!done.length) {
         return { pose: "thinking", text: `No one has completed ${label} yet today.` };
@@ -340,7 +337,7 @@ const INTENTS: Intent[] = [
             ? st.stations.find((s) => s.id === target)?.state !== "done"
             : st.nextStation !== null;
         })
-        .sort(byArrival);
+        .sort(byQueueNumber);
 
       if (!candidates.length) {
         return { pose: "cheer", text: "Nobody is queued up right now — the floor is clear." };
@@ -358,7 +355,7 @@ const INTENTS: Intent[] = [
     id: "referrals",
     keywords: ["referral", "referrals", "referred", "refer"],
     handler: ({ ctx }) => {
-      const flagged = ctx.patients.filter((p) => ctx.statuses[p.visit_id]?.requiresReferral).sort(byArrival);
+      const flagged = ctx.patients.filter((p) => ctx.statuses[p.visit_id]?.requiresReferral).sort(byQueueNumber);
       if (!flagged.length) {
         return { pose: "idle", text: "No referrals flagged today." };
       }
@@ -414,7 +411,7 @@ const INTENTS: Intent[] = [
     handler: ({ ctx }) => {
       const stuck = ctx.patients
         .filter((p) => ctx.statuses[p.visit_id] && ctx.statuses[p.visit_id].nextStation !== null)
-        .sort(byArrival);
+        .sort(byQueueNumber);
       if (!stuck.length) {
         return { pose: "cheer", text: "Nobody is stuck — everyone registered has finished their journey." };
       }
@@ -432,7 +429,7 @@ const INTENTS: Intent[] = [
       if (!ctx.patients.length) {
         return { pose: "sleeping", text: "The queue is empty today." };
       }
-      const sorted = [...ctx.patients].sort(byArrival);
+      const sorted = [...ctx.patients].sort(byQueueNumber);
       return {
         pose: "talking",
         text: `Today's queue — ${plural(sorted.length, "patient")}:`,
@@ -486,4 +483,4 @@ export function respond(raw: string, ctx: ChatContext): BotReply {
   };
 }
 
-export { HELP_CHIPS, displayName };
+export { HELP_CHIPS };

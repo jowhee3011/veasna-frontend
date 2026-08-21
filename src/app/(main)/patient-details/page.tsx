@@ -14,6 +14,7 @@ import { getPatient } from "@/lib/api/patient/getPatients";
 import { getVisit } from "@/lib/api/visit/getVisit";
 import { updatePatient } from "@/lib/api/patient/updatePatient";
 import formatDate from "@/helper/format_date";
+import { calculateAge } from "@/helper/calculate_age";
 import PixelMascot from "@/components/mascot/PixelMascot";
 
 interface Visit {
@@ -156,19 +157,10 @@ export default function PatientDetailsPage() {
     }
   };
 
-  const calculateAge = (birthDate: string): number => {
-    const today = new Date();
-    const dob = new Date(birthDate);
-    const age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
-    return monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())
-      ? age - 1 : age;
-  };
-
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
-        <PixelMascot pose="working" size={72} energy={1.6} />
+        <PixelMascot pose="working" size={72} animated energy={1.6} />
         <p className="text-sm text-muted-foreground">Pulling up the patient record…</p>
       </div>
     );
@@ -177,7 +169,7 @@ export default function PatientDetailsPage() {
   if (!patientData) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-center">
-        <PixelMascot pose="thinking" size={72} energy={0.9} />
+        <PixelMascot pose="thinking" size={72} />
         <h2 className="text-lg font-bold text-foreground">Patient not found</h2>
         <p className="max-w-[40ch] text-sm text-muted-foreground">
           That record isn&apos;t at the selected screening site. Try switching location, or go back to the list.
@@ -204,7 +196,7 @@ export default function PatientDetailsPage() {
             Back
           </Button>
           <div className="hidden h-8 w-px bg-border sm:block" aria-hidden />
-          <PixelMascot pose="idle" size={38} energy={1} className="hidden sm:block" />
+          <PixelMascot pose="idle" size={38} className="hidden sm:block" />
           <div>
             <p className="eyebrow">Patient record</p>
             <h1 className="text-xl font-bold leading-tight tracking-tight text-foreground">
@@ -296,7 +288,7 @@ export default function PatientDetailsPage() {
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Age</label>
                   <p className="mt-1">
-                    {calculateAge(displayPatient?.date_of_birth || '')} years
+                    {calculateAge(displayPatient?.date_of_birth) ?? '—'} years
                   </p>
                 </div>
 

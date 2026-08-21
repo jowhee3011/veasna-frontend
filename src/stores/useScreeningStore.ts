@@ -18,11 +18,9 @@ interface ScreeningState {
   statuses: Record<number, VisitStatus>;
   isSyncing: boolean;
   lastSyncedAt: number | null;
-  syncedVisitIds: number[];
 
   syncQueue: (patients: QueuedPatient[], token: string) => Promise<void>;
   refreshVisit: (visitId: number, token: string) => Promise<VisitStatus | null>;
-  clear: () => void;
 }
 
 /** Run `task` over `items`, at most `limit` in flight. */
@@ -41,11 +39,10 @@ export const useScreeningStore = create<ScreeningState>((set, get) => ({
   statuses: {},
   isSyncing: false,
   lastSyncedAt: null,
-  syncedVisitIds: [],
 
   syncQueue: async (patients, token) => {
     if (!token || patients.length === 0) {
-      set({ lastSyncedAt: Date.now(), syncedVisitIds: [] });
+      set({ lastSyncedAt: Date.now() });
       return;
     }
     if (get().isSyncing) return;
@@ -63,7 +60,6 @@ export const useScreeningStore = create<ScreeningState>((set, get) => ({
         // Merge rather than replace: a single-visit refresh that landed during
         // the sweep should not be thrown away.
         statuses: { ...get().statuses, ...collected },
-        syncedVisitIds: patients.map((p) => p.visit_id),
         lastSyncedAt: Date.now(),
       });
     } finally {
@@ -79,6 +75,4 @@ export const useScreeningStore = create<ScreeningState>((set, get) => ({
     set({ statuses: { ...get().statuses, [visitId]: status } });
     return status;
   },
-
-  clear: () => set({ statuses: {}, syncedVisitIds: [], lastSyncedAt: null }),
 }));

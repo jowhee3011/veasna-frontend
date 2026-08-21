@@ -1,4 +1,5 @@
 import formatDate from "@/helper/format_date";
+import { calculateAge } from "@/helper/calculate_age";
 import { PatientInfo } from "@/lib/types/patient";
 
 interface PatientTableRowProps {
@@ -6,16 +7,6 @@ interface PatientTableRowProps {
   index?: number;
   onViewPatient?: (patientId: number) => void;
   onDeletePatient?: (patientId: number) => void;
-}
-
-function calculateAge(birthDate: string): number | string {
-  if (!birthDate) return "—";
-  const today = new Date();
-  const dob = new Date(birthDate);
-  if (Number.isNaN(dob.getTime())) return "—";
-  const years = today.getFullYear() - dob.getFullYear();
-  const monthDiff = today.getMonth() - dob.getMonth();
-  return monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate()) ? years - 1 : years;
 }
 
 function initials(patient: PatientInfo) {
@@ -58,7 +49,7 @@ export function PatientTableRow({
         {patient.date_of_birth ? formatDate(patient.date_of_birth) : "—"}
       </td>
       <td className="px-4 py-3 text-sm tabular-nums text-foreground">
-        {calculateAge(patient.date_of_birth)}
+        {calculateAge(patient.date_of_birth) ?? "—"}
       </td>
       <td className="px-4 py-3">
         {patient.sex ? (

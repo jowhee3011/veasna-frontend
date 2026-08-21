@@ -127,7 +127,7 @@ function EmptyStation({ station, hasLocation }: { station: StationId; hasLocatio
     <div className="space-y-5">
       <MascotCoach station={station} situation={hasLocation ? "no-patient" : "no-location"} />
       <div className="flex min-h-[45vh] flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
-        <PixelMascot pose="sleeping" size={88} energy={0.7} />
+        <PixelMascot pose="sleeping" size={88} />
         <div>
           <h2 className="text-lg font-bold text-foreground">No patient selected</h2>
           <p className="mx-auto mt-1 max-w-[42ch] text-sm text-muted-foreground">

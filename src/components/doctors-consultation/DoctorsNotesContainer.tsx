@@ -54,7 +54,7 @@ export default function DoctorsNotesContainer({ patient }: Props) {
     }
     
     try {
-      const res = await postConsultation(data, patient.visit_id)
+      await postConsultation(data, patient.visit_id)
       setNotes("");
       setPrescription("");
       setReferralNeeded(true);

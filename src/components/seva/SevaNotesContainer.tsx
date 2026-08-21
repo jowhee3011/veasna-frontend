@@ -60,7 +60,7 @@ export default function SevaNotesContainer({ patient }: Props) {
         }
         
         try {
-            const res = await postSeva(data, patient.visit_id)
+            await postSeva(data, patient.visit_id)
             setLeftWithPinholeNew("");
             setLeftWithoutPinholeNew("");
             setRightWithPinholeNew("");

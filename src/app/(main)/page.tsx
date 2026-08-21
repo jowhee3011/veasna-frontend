@@ -62,10 +62,7 @@ export default function HomePage() {
     const loaded = queuePatients.filter((p) => statuses[p.visit_id]);
     const complete = loaded.filter((p) => statuses[p.visit_id].nextStation === null).length;
     const referrals = loaded.filter((p) => statuses[p.visit_id].requiresReferral).length;
-    const awaitingConsult = loaded.filter(
-      (p) => statuses[p.visit_id].stations.find((s) => s.id === "consultation")?.state !== "done"
-    ).length;
-    return { total, complete, referrals, awaitingConsult, inProgress: total - complete };
+    return { total, complete, referrals, inProgress: total - complete };
   }, [queuePatients, statuses]);
 
   /** Per-station completion, for the session overview bar. */
@@ -92,7 +89,6 @@ export default function HomePage() {
           <PixelMascot
             pose={stats.total ? "happy" : "idle"}
             size={72}
-            energy={1.15}
             label="Veasna, the screening assistant"
           />
           <div className="min-w-0 flex-1">

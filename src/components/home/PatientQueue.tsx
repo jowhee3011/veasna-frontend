@@ -7,19 +7,7 @@ import PixelMascot from "@/components/mascot/PixelMascot";
 import { STATION_BY_ID } from "@/lib/mascot/stations";
 import { useScreeningStore } from "@/stores/useScreeningStore";
 import { QueuedPatient } from "@/lib/types/patient";
-
-/** Queue numbers are "12", "12A", "A3" — sort numerically, then by suffix. */
-function sortQueueNumber(a: QueuedPatient, b: QueuedPatient) {
-  const parts = (queueNum: string) => {
-    const match = (queueNum || "").match(/^(\d+)([A-Za-z]?)$/);
-    return match
-      ? { number: parseInt(match[1], 10), letter: match[2] || "ZZ" }
-      : { number: 999999, letter: queueNum || "" };
-  };
-  const pa = parts(a.queue_no);
-  const pb = parts(b.queue_no);
-  return pa.number !== pb.number ? pa.number - pb.number : pa.letter.localeCompare(pb.letter);
-}
+import { byQueueNumber } from "@/helper/queue_order";
 
 type Filter = "all" | "waiting" | "done";
 
@@ -57,7 +45,7 @@ export function PatientQueue({ patients }: Props) {
           (patient.queue_no?.toString().toLowerCase() || "").includes(query)
         );
       })
-      .sort(sortQueueNumber);
+      .sort(byQueueNumber);
   }, [patients, statuses, searchQuery, filter]);
 
   const today = new Date().toLocaleDateString(undefined, {
@@ -127,7 +115,7 @@ export function PatientQueue({ patients }: Props) {
       <div className="scroll-slim stagger flex-1 space-y-2 overflow-y-auto p-3">
         {visible.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 px-6 py-12 text-center">
-            <PixelMascot pose={patients.length ? "thinking" : "sleeping"} size={64} energy={0.8} />
+            <PixelMascot pose={patients.length ? "thinking" : "sleeping"} size={64} />
             <p className="text-sm font-medium text-foreground">
               {searchQuery || filter !== "all"
                 ? "Nothing matches that filter"

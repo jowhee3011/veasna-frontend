@@ -289,20 +289,6 @@ body::before {
    SURFACES & UTILITIES
    ========================================================================== */
 
-.surface {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-}
-
-.surface-raised {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-}
-
 .surface-hover {
   transition: transform 220ms var(--ease-out-soft), box-shadow 220ms var(--ease-out-soft),
     border-color 220ms var(--ease-out-soft);
@@ -311,16 +297,6 @@ body::before {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   border-color: color-mix(in oklab, var(--primary) 35%, var(--border));
-}
-
-.glass {
-  background: color-mix(in oklab, var(--card) 78%, transparent);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-}
-
-.hairline {
-  border-bottom: 1px solid var(--border);
 }
 
 .text-balance {
@@ -348,30 +324,9 @@ body::before {
   image-rendering: crisp-edges;
 }
 
-/* Chunky pixel-style border, drawn purely with box-shadow steps */
-.pixel-frame {
-  border-radius: 0;
-  box-shadow:
-    0 -3px 0 0 var(--foreground),
-    0 3px 0 0 var(--foreground),
-    -3px 0 0 0 var(--foreground),
-    3px 0 0 0 var(--foreground);
-}
-
-.font-pixel {
-  font-family: var(--font-mono);
-  letter-spacing: 0.04em;
-  font-variant-ligatures: none;
-}
-
 /* ==========================================================================
    ANIMATION LIBRARY
    ========================================================================== */
-
-@keyframes veasna-bob {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-14%); }
-}
 
 @keyframes veasna-glow {
   0%, 100% { opacity: 0.45; transform: scale(1); }
@@ -398,28 +353,15 @@ body::before {
   30%           { transform: translateY(-5px); opacity: 1; }
 }
 
-@keyframes veasna-ring {
-  0%   { box-shadow: 0 0 0 0 var(--lantern-glow); }
-  100% { box-shadow: 0 0 0 18px transparent; }
-}
-
 @keyframes veasna-shimmer {
   0%   { background-position: -220% 0; }
   100% { background-position: 220% 0; }
 }
 
-@keyframes veasna-trail {
-  0%   { opacity: 0; transform: translate(0, 0) scale(0.4); }
-  40%  { opacity: 0.9; }
-  100% { opacity: 0; transform: translate(-26px, 10px) scale(0.15); }
-}
-
-.animate-bob        { animation: veasna-bob 2.8s ease-in-out infinite; }
 .animate-glow       { animation: veasna-glow 2.2s ease-in-out infinite; }
 .animate-pop-in     { animation: veasna-pop-in 340ms var(--ease-spring) both; }
 .animate-slide-up   { animation: veasna-slide-up 420ms var(--ease-out-soft) both; }
 .animate-fade-in    { animation: veasna-fade-in 300ms var(--ease-out-soft) both; }
-.animate-ring       { animation: veasna-ring 1.9s ease-out infinite; }
 
 .skeleton {
   background: linear-gradient(

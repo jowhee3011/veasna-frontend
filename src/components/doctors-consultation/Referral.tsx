@@ -5,7 +5,7 @@ import { postReferral } from "@/lib/api/visit/postReferral";
 import { Referral } from "@/lib/types/consultation";
 import { PatientInfo, QueuedPatient } from "@/lib/types/patient";
 import { useUserStore } from "@/stores/useUserStore";
-import { Ref, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface Props {
@@ -37,7 +37,7 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
     }
     
     try {
-      const res = await postReferral(data, patient.visit_id)
+      await postReferral(data, patient.visit_id)
       setReferralDate("");
       setReferralType([]);
       setIllness("");
@@ -172,7 +172,7 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
           <button
             type="button"
             className="bg-secondary text-secondary-foreground px-4 py-2 rounded hover:opacity-90"
-            onClick={e => onClose()}
+            onClick={() => onClose()}
           >
             Print
           </button>

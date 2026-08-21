@@ -5,42 +5,123 @@
  * context. No sprite sheets, no animation library: every frame is painted from
  * the character grid in lib/mascot/sprite.ts.
  *
- * Animation is done in the draw loop rather than with CSS so the pixels stay
- * on the sprite grid:
- *   - bob      vertical float, quantised to whole sprite pixels
- *   - flap     wing columns squashed toward the body centre
- *   - glow     additive bloom behind the lantern and antenna tips
- *   - blink    the eye rows swap for a couple of frames at random intervals
+ * Instances are STILL by default. The mascot appears on nearly every screen,
+ * and a page full of independently bobbing sprites is noise rather than
+ * personality — so motion is opt-in via `animated`, reserved for the few
+ * places where it carries meaning (the assistant is thinking, work is
+ * loading, the firefly has moved to a new station).
  */
 
 import { useEffect, useRef } from "react";
 import {
+  EMISSIVE_KEYS,
   FRAMES,
   PALETTE,
   SPRITE_H,
   SPRITE_W,
   WING_KEYS,
-  EMISSIVE_KEYS,
   type PoseName,
 } from "@/lib/mascot/sprite";
 
 /** Canvas pixels per sprite pixel. Fixed, so the art never lands off-grid. */
 const PX = 10;
+const CANVAS_W = SPRITE_W * PX;
+const CANVAS_H = SPRITE_H * PX;
+const SPRITE_CENTRE_X = SPRITE_W / 2;
+const BLOOM_COLOUR = "#ffd457";
+
 /** Poses where an idle blink reads as natural. */
-const BLINKING_POSES: PoseName[] = ["idle", "talking", "happy", "working", "thinking"];
+const BLINKING_POSES = new Set<PoseName>(["idle", "talking", "happy", "working", "thinking"]);
+
+/* ------------------------------------------------------------------ *
+ * Painting — pure, given a grid and a set of motion values.
+ * ------------------------------------------------------------------ */
+
+interface PaintOptions {
+  /** Vertical offset in whole sprite pixels. */
+  bobPx: number;
+  /** 1 = wings out, <1 = squashed toward the body centre. */
+  wingSpread: number;
+  /** Lantern bloom strength, 0 disables it. */
+  glow: number;
+}
+
+/** How a still mascot is drawn: no offset, wings out, steady lantern. */
+const STILL: PaintOptions = { bobPx: 0, wingSpread: 1, glow: 0.8 };
+
+function drawBloom(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  alpha: number
+) {
+  const cx = (x + 0.5) * PX;
+  const cy = (y + 0.5) * PX;
+  const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+  gradient.addColorStop(0, BLOOM_COLOUR);
+  gradient.addColorStop(1, "transparent");
+
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = gradient;
+  ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+  ctx.globalAlpha = 1;
+}
+
+function paint(ctx: CanvasRenderingContext2D, grid: string[], opts: PaintOptions) {
+  const { bobPx, wingSpread, glow } = opts;
+  ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+
+  // Bloom pass, behind the sprite. Blooms stack additively and the lantern
+  // glass alone is eight pixels, so each contribution has to stay faint or the
+  // whole sprite washes out at larger sizes.
+  if (glow > 0) {
+    for (let y = 0; y < SPRITE_H; y++) {
+      for (let x = 0; x < SPRITE_W; x++) {
+        const key = grid[y][x];
+        if (!EMISSIVE_KEYS.has(key)) continue;
+        const isFlame = key === "L";
+        drawBloom(ctx, x, y + bobPx, isFlame ? PX * 3.6 : PX * 1.8, (isFlame ? 0.34 : 0.13) * glow);
+      }
+    }
+  }
+
+  // Sprite pass.
+  for (let y = 0; y < SPRITE_H; y++) {
+    const row = grid[y];
+    for (let x = 0; x < SPRITE_W; x++) {
+      const key = row[x];
+      const colour = PALETTE[key];
+      if (!colour) continue;
+
+      // Wings squash toward the body centre, then re-snap to the grid — any
+      // sub-pixel drift would blur the nearest-neighbour scaling that makes
+      // this read as pixel art.
+      const drawX =
+        wingSpread !== 1 && WING_KEYS.has(key)
+          ? Math.round(SPRITE_CENTRE_X + (x - SPRITE_CENTRE_X) * wingSpread)
+          : x;
+
+      ctx.fillStyle = colour;
+      ctx.fillRect(drawX * PX, (y + bobPx) * PX, PX, PX);
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Component
+ * ------------------------------------------------------------------ */
 
 export interface PixelMascotProps {
   pose?: PoseName;
   /** Rendered CSS size in px (square). */
   size?: number;
-  /** Vertical float. */
-  bob?: boolean;
-  /** Wing flap. */
-  flap?: boolean;
+  /** Opt in to bobbing, wing-flap, a pulsing lantern and idle blinking. */
+  animated?: boolean;
+  /** Speed multiplier while animated. 1 = calm, 2 = excited. */
+  energy?: number;
   /** Lantern bloom. */
   glow?: boolean;
-  /** 0 = still, 1 = normal, 2 = excited. Scales every animation's speed. */
-  energy?: number;
   className?: string;
   /** Accessible description; omit for purely decorative instances. */
   label?: string;
@@ -49,145 +130,83 @@ export interface PixelMascotProps {
 export default function PixelMascot({
   pose = "idle",
   size = 64,
-  bob = true,
-  flap = true,
-  glow = true,
+  animated = false,
   energy = 1,
+  glow = true,
   className = "",
   label,
 }: PixelMascotProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // Live props for the animation loop, so changing a prop never restarts it.
-  const props = useRef({ pose, bob, flap, glow, energy });
-  useEffect(() => {
-    props.current = { pose, bob, flap, glow, energy };
-  }, [pose, bob, flap, glow, energy]);
 
+  // Live values for the animation loop, so a pose change never restarts it and
+  // resets the bob phase mid-float.
+  const live = useRef({ pose, energy, glow });
   useEffect(() => {
+    live.current = { pose, energy, glow };
+  }, [pose, energy, glow]);
+
+  const context = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return null;
+    canvas.width = CANVAS_W;
+    canvas.height = CANVAS_H;
+    ctx.imageSmoothingEnabled = false;
+    return ctx;
+  };
+
+  // Still instances: paint once, and again only when what's drawn changes.
+  useEffect(() => {
+    if (animated && !prefersReducedMotion()) return;
+    const ctx = context();
+    if (!ctx) return;
+    paint(ctx, FRAMES[pose] ?? FRAMES.idle, { ...STILL, glow: glow ? STILL.glow : 0 });
+  }, [animated, pose, glow, size]);
+
+  // Animated instances: one loop for the lifetime of the component.
+  useEffect(() => {
+    if (!animated || prefersReducedMotion()) return;
+    const ctx = context();
     if (!ctx) return;
 
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const W = SPRITE_W * PX;
-    const H = SPRITE_H * PX;
-    canvas.width = W;
-    canvas.height = H;
-    ctx.imageSmoothingEnabled = false;
-
-    const centreX = SPRITE_W / 2;
     let raf = 0;
     let start = 0;
-    // Next blink is scheduled rather than random-per-frame, so blinks read as
+    // Blinks are scheduled rather than rolled per frame, so they read as
     // deliberate instead of as flicker.
     let nextBlinkAt = 1200 + Math.random() * 2600;
     let blinkUntil = -1;
-    let lastStaticPose: PoseName | null = null;
 
-    function drawBloom(x: number, y: number, radius: number, alpha: number, colour: string) {
-      const cx = (x + 0.5) * PX;
-      const cy = (y + 0.5) * PX;
-      const g = ctx!.createRadialGradient(cx, cy, 0, cx, cy, radius);
-      g.addColorStop(0, colour);
-      g.addColorStop(1, "transparent");
-      ctx!.globalAlpha = alpha;
-      ctx!.fillStyle = g;
-      ctx!.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
-      ctx!.globalAlpha = 1;
-    }
-
-    function frame(now: number) {
+    const frame = (now: number) => {
       if (!start) start = now;
-      const p = props.current;
-      const e = reduceMotion ? 0 : Math.max(0, p.energy);
-      const t = (now - start) / 1000;
+      const elapsedMs = now - start;
+      const t = elapsedMs / 1000;
+      const { pose, energy, glow } = live.current;
+      const speed = Math.max(0, energy);
 
-      // ---- pose selection (auto-blink overlays the requested pose) ----
-      let pose = p.pose;
-      if (!reduceMotion && BLINKING_POSES.includes(pose)) {
-        const ms = now - start;
-        if (ms > nextBlinkAt && blinkUntil < 0) blinkUntil = ms + 110;
-        if (blinkUntil > 0) {
-          if (ms < blinkUntil) pose = "blink";
+      let shown = pose;
+      if (BLINKING_POSES.has(pose)) {
+        if (blinkUntil < 0 && elapsedMs > nextBlinkAt) blinkUntil = elapsedMs + 110;
+        if (blinkUntil >= 0) {
+          if (elapsedMs < blinkUntil) shown = "blink";
           else {
             blinkUntil = -1;
-            nextBlinkAt = ms + 1600 + Math.random() * 3400;
-          }
-        }
-      }
-      const grid = FRAMES[pose] ?? FRAMES.idle;
-
-      // Motion is off: repaint only when the pose actually changes.
-      if (e === 0) {
-        if (lastStaticPose === pose) {
-          raf = requestAnimationFrame(frame);
-          return;
-        }
-        lastStaticPose = pose;
-      } else {
-        lastStaticPose = null;
-      }
-
-      // ---- motion values ----
-      // Bob is quantised to whole sprite pixels: sub-pixel drift would blur
-      // the nearest-neighbour scaling that makes this read as pixel art.
-      const bobPx = p.bob && e > 0 ? Math.round(Math.sin(t * 2.1 * e) * 1.2) : 0;
-      const spread = p.flap && e > 0 ? 0.62 + 0.38 * Math.abs(Math.sin(t * 6.5 * e)) : 1;
-      const glowPulse = 0.55 + 0.45 * Math.sin(t * 2.4 * (e || 1));
-
-      ctx!.clearRect(0, 0, W, H);
-
-      // ---- bloom pass, behind the sprite ----
-      if (p.glow) {
-        for (let y = 0; y < SPRITE_H; y++) {
-          for (let x = 0; x < SPRITE_W; x++) {
-            const key = grid[y][x];
-            if (!EMISSIVE_KEYS.has(key)) continue;
-            // Blooms stack additively, and the lantern glass alone is eight
-            // pixels — so the per-pixel contribution has to stay low or the
-            // whole sprite washes out at larger sizes.
-            const flame = key === "L";
-            drawBloom(
-              x,
-              y + bobPx,
-              flame ? PX * 3.6 : PX * 1.8,
-              (flame ? 0.34 : 0.13) * glowPulse,
-              "#ffd457"
-            );
+            nextBlinkAt = elapsedMs + 1600 + Math.random() * 3400;
           }
         }
       }
 
-      // ---- sprite pass ----
-      for (let y = 0; y < SPRITE_H; y++) {
-        const row = grid[y];
-        for (let x = 0; x < SPRITE_W; x++) {
-          const key = row[x];
-          if (key === ".") continue;
-          const colour = PALETTE[key];
-          if (!colour) continue;
-
-          let drawX = x;
-          if (WING_KEYS.has(key) && spread !== 1) {
-            // Squash the wing toward the body centre, then re-snap to the grid.
-            drawX = Math.round(centreX + (x - centreX) * spread);
-          }
-
-          ctx!.fillStyle = colour;
-          ctx!.fillRect(drawX * PX, (y + bobPx) * PX, PX, PX);
-        }
-      }
+      paint(ctx, FRAMES[shown] ?? FRAMES.idle, {
+        bobPx: Math.round(Math.sin(t * 2.1 * speed) * 1.2),
+        wingSpread: 0.62 + 0.38 * Math.abs(Math.sin(t * 6.5 * speed)),
+        glow: glow ? 0.55 + 0.45 * Math.sin(t * 2.4 * speed) : 0,
+      });
 
       raf = requestAnimationFrame(frame);
-    }
+    };
 
     raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [animated]);
 
   return (
     <canvas
@@ -198,5 +217,12 @@ export default function PixelMascot({
       aria-label={label}
       aria-hidden={label ? undefined : true}
     />
+  );
+}
+
+function prefersReducedMotion() {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 }

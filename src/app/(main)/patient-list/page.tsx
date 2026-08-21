@@ -71,7 +71,7 @@ export default function PatientListPage() {
       {/* Header */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex items-center gap-3">
-          <PixelMascot pose="working" size={54} energy={1} />
+          <PixelMascot pose="working" size={54} />
           <div>
             <p className="eyebrow">Records</p>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Patient list</h1>

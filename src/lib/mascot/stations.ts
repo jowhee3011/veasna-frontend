@@ -81,12 +81,6 @@ export const STATION_BY_ID: Record<StationId, Station> = Object.fromEntries(
   STATIONS.map((s) => [s.id, s])
 ) as Record<StationId, Station>;
 
-/** Which station a route belongs to, for the in-page coach. */
-export function stationForPath(pathname: string): StationId | null {
-  if (pathname === "/") return "registration";
-  const hit = STATIONS.find((s) => s.href !== "/" && pathname.startsWith(s.href));
-  return hit ? hit.id : null;
-}
 
 /**
  * The shape returned by GET /api/patient/visit/:id. Only the fields that
@@ -121,7 +115,6 @@ export interface VisitStatus {
   stations: StationProgress[];
   /** First station that still needs work, or null when the journey is done. */
   nextStation: StationId | null;
-  completedCount: number;
   /** Completion across the non-optional stations, 0..1. */
   ratio: number;
   requiresReferral: boolean;
@@ -203,7 +196,6 @@ export function deriveStatus(visit: VisitStatusSource): VisitStatus {
     visitId: visit.visit_id,
     stations,
     nextStation: firstIncomplete ? firstIncomplete.id : null,
-    completedCount: raw.filter((r) => r.done).length,
     ratio: required.length ? requiredDone / required.length : 0,
     requiresReferral: Boolean(consultation?.require_referral) || referralCount > 0,
     referralCount,

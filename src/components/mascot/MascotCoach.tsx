@@ -137,7 +137,7 @@ export default function MascotCoach({
     <div
       className={`flex items-start gap-3 rounded-2xl border border-border bg-card px-4 py-3 shadow-[var(--shadow-xs)] animate-slide-up ${className}`}
     >
-      <PixelMascot pose={pose} size={46} energy={1.1} className="-mt-1" />
+      <PixelMascot pose={pose} size={46} className="-mt-1" />
 
       <div className="min-w-0 flex-1">
         {/* Speech tail */}

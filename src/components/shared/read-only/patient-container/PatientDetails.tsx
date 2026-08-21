@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Loading from "../../Loading";
 import NoDataAvailable from "../../NoDataAvailable";
 import { PATIENT } from "@/constants/strings";
+import { calculateAge } from "@/helper/calculate_age";
 
 interface Props {
   patient: QueuedPatient;
@@ -15,14 +16,6 @@ interface Props {
 export default function PatientDetails({ patient }: Props) {
   const [patientDetails, setPatientDetails] = useState<PatientInfo | null>(null);
   const [loading, setLoading] = useState(false);
-
-  // Helper to calculate age
-  const getAge = (dob: string | null) => {
-    if (!dob) return "N/A";
-    const birthDate = new Date(dob);
-    const diff = new Date().getTime() - birthDate.getTime();
-    return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25)).toString();
-  };
 
   useEffect(() => {
     if (!patient?.patient_id) {
@@ -67,7 +60,7 @@ export default function PatientDetails({ patient }: Props) {
         />
         <LabelDescriptionPair 
           label="Age"
-          description={getAge(patientDetails.date_of_birth)}
+          description={calculateAge(patientDetails.date_of_birth)?.toString() ?? "N/A"}
         />
         <LabelDescriptionPair 
           label="Sex"

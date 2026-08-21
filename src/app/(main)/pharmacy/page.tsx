@@ -106,7 +106,7 @@ export default function Pharmacy() {
       {/* Header */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex items-center gap-3">
-          <PixelMascot pose={needsAttention ? "alert" : "happy"} size={54} energy={1} />
+          <PixelMascot pose={needsAttention ? "alert" : "happy"} size={54} />
           <div>
             <p className="eyebrow">Station</p>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Pharmacy</h1>

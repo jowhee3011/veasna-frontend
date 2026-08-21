@@ -93,12 +93,12 @@ export default function Login() {
       {/* ---- Brand panel ---- */}
       <div className="relative flex flex-col justify-between gap-8 bg-gradient-to-br from-[var(--primary-soft)] via-card to-card p-8">
         <div className="flex items-center gap-2.5">
-          <PixelMascot pose="idle" size={36} energy={1} />
+          <PixelMascot pose="idle" size={36} />
           <span className="text-lg font-bold tracking-tight text-foreground">Veasna</span>
         </div>
 
         <div className="flex flex-col items-center text-center">
-          <PixelMascot pose="happy" size={128} energy={1.2} label="Veasna, the screening assistant" />
+          <PixelMascot pose="happy" size={128} animated energy={1.2} label="Veasna, the screening assistant" />
           <h2 className="mt-5 text-xl font-bold text-balance text-foreground">
             Lighting the way through every screening
           </h2>

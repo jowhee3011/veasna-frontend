@@ -15,7 +15,7 @@ export default function LoadingSpinner({ fullscreen = true, message = "Lighting 
         fullscreen ? "min-h-screen" : "py-10"
       }`}
     >
-      <PixelMascot pose="working" size={fullscreen ? 80 : 52} energy={1.7} />
+      <PixelMascot pose="working" size={fullscreen ? 80 : 52} animated energy={1.7} />
       <p className="text-sm text-muted-foreground">{message}</p>
     </div>
   );
