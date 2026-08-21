@@ -1,39 +1,28 @@
-"use client"
+"use client";
 
+import { useState } from "react";
+import StationPageShell from "@/components/shared/StationPageShell";
+import DoctorsNotesContainer from "@/components/doctors-consultation/DoctorsNotesContainer";
 import PatientContainer from "@/components/shared/read-only/patient-container/PatientContainer";
 import TriageContainer from "@/components/shared/read-only/triage-container/TriageContainer";
-import DoctorsNotesContainer from "@/components/doctors-consultation/DoctorsNotesContainer";
-import SearchBar from "@/components/shared/SearchBar";
 import { QueuedPatient } from "@/lib/types/patient";
-import { useState } from "react";
-import NoPatientSelected from "@/components/shared/NoPatientSelected";
-import { SET_LOCATION_MESSAGE } from "@/messages/info";
-import toast from "react-hot-toast";
 
 export default function DoctorsConsultation() {
   const [selectedPatient, setSelectedPatient] = useState<QueuedPatient | null>(null);
 
-  if (!location) {
-      toast(SET_LOCATION_MESSAGE);
-  }
-
-  if (!selectedPatient) {
-      return (
-      <div className="flex flex-col w-full h-screen gap-y-5">
-          <SearchBar onSelectPatient={setSelectedPatient} />
-          <NoPatientSelected/>
-      </div>
-      );
-  }
-
   return (
-    <div className="flex flex-col gap-2 lg:min-h-[70vh]">
-      <SearchBar onSelectPatient={setSelectedPatient} />
-      <div className="flex flex-col gap-2 mt-3 lg:w-full lg:flex-row lg:gap-4 lg:justify-evenly">
-        <PatientContainer selectedPatient = {selectedPatient}/>
-        <TriageContainer selectedPatient = {selectedPatient}/>
-        <DoctorsNotesContainer patient={selectedPatient} />
-      </div>
-    </div>
-  )
+    <StationPageShell
+      station="consultation"
+      selectedPatient={selectedPatient}
+      onSelectPatient={setSelectedPatient}
+    >
+      {selectedPatient && (
+        <div className="grid gap-5 lg:grid-cols-3">
+          <PatientContainer selectedPatient={selectedPatient} />
+          <TriageContainer selectedPatient={selectedPatient} />
+          <DoctorsNotesContainer patient={selectedPatient} />
+        </div>
+      )}
+    </StationPageShell>
+  );
 }

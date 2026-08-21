@@ -96,7 +96,7 @@ export default function LocationDropdown() {
       {/* Dropdown Trigger */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 text-white hover:text-white/80 transition-colors duration-200"
+        className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-white transition hover:bg-white/10"
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
@@ -118,14 +118,14 @@ export default function LocationDropdown() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+        <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-border bg-popover py-1.5 shadow-[var(--shadow-lg)] z-50 animate-pop-in">
           {/* Error Display */}
           {error && (
-            <div className="px-4 py-2 bg-red-50 border-b border-red-200">
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="px-4 py-2 bg-[var(--destructive-soft)] border-b border-[var(--destructive)]/30">
+              <p className="text-sm text-[var(--destructive)]">{error}</p>
               <button
                 onClick={() => setError(null)}
-                className="text-xs text-red-500 hover:text-red-700 mt-1"
+                className="text-xs text-[var(--destructive)] hover:text-[var(--destructive)] mt-1"
               >
                 Dismiss
               </button>
@@ -133,14 +133,14 @@ export default function LocationDropdown() {
           )}
 
           {/* Header with Edit Toggle */}
-          <div className="px-4 py-2 border-b border-gray-200 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">
+          <div className="px-4 py-2 border-b border-border flex items-center justify-between">
+            <span className="text-sm font-medium text-foreground">
               {isEditMode ? 'Edit Locations' : 'Select Location'}
             </span>
             <button
               onClick={handleEditModeToggle}
               disabled={isLoading}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-sm text-[var(--primary-strong)] hover:text-[var(--primary-strong)] font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isEditMode ? 'Done' : 'Edit'}
             </button>
@@ -150,11 +150,11 @@ export default function LocationDropdown() {
           {locations.map((location) => (
             <div
               key={location.id}
-              className={`flex items-center px-4 py-3 text-gray-800 ${
-                !isEditMode ? 'hover:bg-blue-50 hover:text-blue-600 cursor-pointer' : ''
+              className={`flex items-center px-4 py-3 text-foreground ${
+                !isEditMode ? 'hover:bg-[var(--primary-soft)] hover:text-[var(--primary-strong)] cursor-pointer' : ''
               } transition-colors duration-150 ${
                 currentLocation?.id === location.id && !isEditMode
-                  ? 'bg-blue-50 text-blue-600 font-medium'
+                  ? 'bg-[var(--primary-soft)] text-[var(--primary-strong)] font-medium'
                   : ''
               }`}
               onClick={() => handleLocationSelect(location)}
@@ -167,7 +167,7 @@ export default function LocationDropdown() {
                 <button
                   onClick={(e) => handleDeleteLocation(location.id, e)}
                   disabled={isLoading}
-                  className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1 text-[var(--destructive)] hover:text-[var(--destructive)] hover:bg-[var(--destructive-soft)] rounded transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Delete location"
                 >
                   <TrashIcon className="w-4 h-4"/>
@@ -175,7 +175,7 @@ export default function LocationDropdown() {
               ) : (
         
                 currentLocation?.id === location.id && (
-                  <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4 text-[var(--primary-strong)]" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 )
@@ -187,7 +187,7 @@ export default function LocationDropdown() {
           {isEditMode && (
             <>
               {/* Separator */}
-              <div className="border-t border-gray-200 my-1" />
+              <div className="border-t border-border my-1" />
 
               {showAddLocationInput ? (
                 <form onSubmit={handleSubmitNewLocation} className="px-4 py-3">
@@ -197,13 +197,13 @@ export default function LocationDropdown() {
                     value={newLocationName}
                     onChange={(e) => setNewLocationName(e.target.value)}
                     placeholder="Enter location name"
-                    className="text-black w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="text-foreground w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:border-[var(--primary)]"
                   />
                   <div className="flex space-x-2 mt-2">
                     <button
                       type="submit"
                       disabled={!newLocationName.trim() || isLoading}
-                      className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+                      className="px-3 py-1 bg-[var(--primary)] text-white text-sm rounded hover:bg-[var(--primary-strong)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                     >
                       {isLoading ? 'Adding...' : 'Add'}
                     </button>
@@ -211,7 +211,7 @@ export default function LocationDropdown() {
                       type="button"
                       onClick={handleCancelAdd}
                       disabled={isLoading}
-                      className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+                      className="px-3 py-1 bg-muted text-foreground text-sm rounded hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                     >
                       Cancel
                     </button>
@@ -221,7 +221,7 @@ export default function LocationDropdown() {
                 <button
                   onClick={handleAddLocation}
                   disabled={isLoading}
-                  className="w-full text-left px-4 py-3 text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 flex items-center space-x-2"
+                  className="w-full text-left px-4 py-3 text-[var(--primary-strong)] hover:bg-[var(--primary-soft)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 flex items-center space-x-2"
                 >
                   <PlusIcon className='w-4 h-4'/>
                   <span className="font-medium">Add Location</span>

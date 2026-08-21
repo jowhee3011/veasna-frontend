@@ -130,7 +130,7 @@ export default function SevaNotesContainer({ patient }: Props) {
             <input
             type="date"
             placeholder="DD/MM/YYYY"
-            className="bg-white border-[1px] rounded-sm p-2 w-32 text-black"
+            className="bg-card border-[1px] rounded-sm p-2 w-32 text-foreground"
             onChange={(e) => setDateOfReferral(e.target.value)}
             value={dateOfReferral}
             />

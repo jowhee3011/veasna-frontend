@@ -92,17 +92,17 @@ export default function Vitals({patient, onUpdatePatient, isViewMode}: Props) {
     const getCategoryColor = (category: string) => {
         switch (category) {
             case 'Underweight':
-                return 'bg-blue-600';
+                return 'bg-[var(--primary)]';
             case 'Healthy Weight':
-                return 'bg-green-600';
+                return 'bg-[var(--success)]';
             case 'Overweight':
-                return 'bg-yellow-600';
+                return 'bg-[var(--warning)]';
             case 'Obese':
                 return 'bg-orange-600';
             case 'Severely Obese':
-                return 'bg-red-600';
+                return 'bg-[var(--destructive)]';
             default:
-                return 'bg-gray-200';
+                return 'bg-muted';
         }
     };
 
@@ -121,7 +121,7 @@ export default function Vitals({patient, onUpdatePatient, isViewMode}: Props) {
                         pattern='[0-9]*'
                         value={patient.height}
                         onChange={(e) => handleChange('height', e.target.value)}
-                        className='w-64 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black'
+                        className='w-64 px-3 py-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground'
                     />
                 </div>
 
@@ -136,7 +136,7 @@ export default function Vitals({patient, onUpdatePatient, isViewMode}: Props) {
                         placeholder='0.00'
                         value={patient.weight}
                         onChange={(e) => handleChange('weight', e.target.value)}
-                        className='w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black'
+                        className='w-64 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground'
                     />
                 </div>
 
@@ -152,13 +152,13 @@ export default function Vitals({patient, onUpdatePatient, isViewMode}: Props) {
                             placeholder='0.00'
                             value={patient.bmi}
                             onChange={(e) => handleChange('bmi', e.target.value)}
-                            className='w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black'
+                            className='w-32 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground'
                             readOnly
                         />
                         <button
                             type='button'
                             onClick={calculateBMI}
-                            className="px-3 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="px-3 py-2 bg-[var(--primary)] text-white text-sm rounded-md hover:bg-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             Calculate BMI
                         </button>
@@ -176,7 +176,7 @@ export default function Vitals({patient, onUpdatePatient, isViewMode}: Props) {
                             id='below3rdPercentile'
                             checked={patient.below_3rd_percentile}
                             onChange={(e) => handleChange('below_3rd_percentile', e.target.checked)}
-                            className='justify-self-start h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
+                            className='justify-self-start h-5 w-5 text-[var(--primary-strong)] focus:ring-blue-500 border-input rounded'
                         />
                     </div>
                 </div>
@@ -190,7 +190,7 @@ export default function Vitals({patient, onUpdatePatient, isViewMode}: Props) {
                         type='text'
                         value={patient.category || ""} // default to empty string if undefined
                         onChange={(e) => handleChange('category', e.target.value)}
-                        className={`text-center w-36 px-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium ${
+                        className={`text-center w-36 px-3 py-2 border border-input rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium ${
                             getCategoryColor(patient.category || "")
                         }`}   
                         readOnly
@@ -209,7 +209,7 @@ export default function Vitals({patient, onUpdatePatient, isViewMode}: Props) {
                         pattern='[0-9]*'
                         value={patient.bp_systolic}
                         onChange={(e) => handleChange('bp_systolic', e.target.value)}
-                        className='w-29 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black'
+                        className='w-29 px-3 py-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground'
                         placeholder='Systolic'
                     />
                     <span>/</span>
@@ -220,7 +220,7 @@ export default function Vitals({patient, onUpdatePatient, isViewMode}: Props) {
                         pattern='[0-9]*'
                         value={patient.bp_diastolic}
                         onChange={(e) => handleChange('bp_diastolic', e.target.value)}
-                        className='w-29 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black'
+                        className='w-29 px-3 py-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground'
                         placeholder='Diastolic'
                     />
                     </div>                 
@@ -238,7 +238,7 @@ export default function Vitals({patient, onUpdatePatient, isViewMode}: Props) {
                         placeholder='0.0'
                         value={patient.temperature}
                         onChange={(e) => handleChange('temperature', e.target.value)}
-                        className='w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black'
+                        className='w-64 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground'
                     />
                 </div>
 
@@ -251,7 +251,7 @@ export default function Vitals({patient, onUpdatePatient, isViewMode}: Props) {
                         value={patient.additionalNotes}
                         onChange={(e) => handleChange('additionalNotes', e.target.value)}
                         rows={4}
-                        className='w-96 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black'
+                        className='w-96 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground'
                         placeholder='Enter any additional notes...'
                     />
                 </div>

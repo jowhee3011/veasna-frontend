@@ -20,30 +20,30 @@ export function DrugTable({ drugs, onStockLevelChange, onDeleteDrug}: DrugTableP
       }, [drugs])
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+          <div className="px-6 py-5 border-b border-border bg-gradient-to-r from-[var(--primary-soft)] to-transparent">
             <div className="flex items-center justify-between ">
             
               {/* Table Header */}
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-foreground">
                 Drug Inventory
               </h2>
 
               {/* Overal Inventory Statistics */}
               <div className="flex items-center space-x-4 text-sm">
-                <span className="text-gray-600">
+                <span className="text-muted-foreground">
                   Total: <span className="font-semibold">{drugs.length}</span>
                 </span>
-                <span className="text-red-500">
+                <span className="text-[var(--destructive)]">
                   No Stock: <span className="font-semibold">{stockCounts["no stock"] || 0}</span>
                 </span>
-                <span className="text-yellow-500">
+                <span className="text-[var(--warning)]">
                   Low: <span className="font-semibold">{stockCounts.low || 0}</span>
                 </span>
-                <span className="text-blue-500">
+                <span className="text-[var(--primary)]">
                   Medium: <span className="font-semibold">{stockCounts.medium || 0}</span>
                 </span>
-                <span className="text-green-500">
+                <span className="text-[var(--success)]">
                   High: <span className="font-semibold">{stockCounts.high || 0}</span>
                 </span>
               </div>
@@ -52,20 +52,20 @@ export function DrugTable({ drugs, onStockLevelChange, onDeleteDrug}: DrugTableP
           
           <div className="overflow-x-auto">
             <table className="w-full table-fixed">
-              <thead className="bg-gray-100">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="w-1/4 px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="w-1/4 px-6 py-4 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Drug Name
                   </th>
-                  <th className="w-1/4 px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="w-1/4 px-6 py-4 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Stock Level
                   </th>
-                  <th className="w-1/4 px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  <th className="w-1/4 px-6 py-4 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {drugs.map((drug) => (
                   <DrugTableRow 
                     key={drug.id}
@@ -79,9 +79,9 @@ export function DrugTable({ drugs, onStockLevelChange, onDeleteDrug}: DrugTableP
             
             {drugs.length === 0 && (
               <div className="text-center py-12">
-                <DrugIcon className="mx-auto h-16 w-16 text-gray-300" />
-                <h3 className="mt-4 text-lg font-medium text-gray-900">No drugs found</h3>
-                <p className="mt-2 text-gray-500">
+                <DrugIcon className="mx-auto h-16 w-16 text-muted-foreground" />
+                <h3 className="mt-4 text-lg font-medium text-foreground">No drugs found</h3>
+                <p className="mt-2 text-muted-foreground">
                   Try adjusting your search criteria or check your spelling.
                 </p>
               </div>

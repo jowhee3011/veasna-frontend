@@ -1,26 +1,26 @@
 // src/app/(main)/layout.tsx
 
 import TopNav from "@/components/shared/TopNav";
-import AuthWrapper from "../wrappers/AuthWrapper";
 import Footer from "@/components/shared/Footer";
-import { getLocations } from "@/lib/api/location/getLocations";
-import { Location } from "@/lib/types/location";
+import MascotChat from "@/components/mascot/MascotChat";
+import AuthWrapper from "../wrappers/AuthWrapper";
 
-export default async function MainLayout({
+export default function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
-    <>
-      <AuthWrapper>
-        <TopNav/>
-          <main className="flex-1 p-6 bg-background min-h-screen w-full flex justify-start">
-            {children}
-          </main>
+    <AuthWrapper>
+      <div className="relative flex min-h-screen flex-col">
+        <TopNav />
+        <main className="relative z-[1] mx-auto w-full max-w-[1600px] flex-1 px-5 py-6">
+          {children}
+        </main>
         <Footer />
-      </AuthWrapper>
-    </>
+        {/* Floating assistant — available on every station page */}
+        <MascotChat />
+      </div>
+    </AuthWrapper>
   );
 }

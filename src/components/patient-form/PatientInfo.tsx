@@ -96,7 +96,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                         type="text"
                         value={patient.queue_no}
                         onChange={(e) => handleChange('queue_no', e.target.value)}
-                        className="w-64 px-3 py-2 border border-gray-300 border-width-10 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+                        className="w-64 px-3 py-2 border border-input border-width-10 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground"
                     />
                 </div>
 
@@ -110,7 +110,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                         type='text'
                         value={patient.english_name}
                         onChange={(e) => handleChange('english_name', e.target.value)}
-                        className="w-64 px-3 py-2 border border-gray-300 border-width-10 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+                        className="w-64 px-3 py-2 border border-input border-width-10 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground"
                     />
                 </div>
 
@@ -123,7 +123,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                         type='text'
                         value={patient.khmer_name}
                         onChange={(e) => handleChange('khmer_name', e.target.value)}
-                        className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+                        className="w-64 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground"
                     />
                 </div>
 
@@ -146,12 +146,12 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                                     handleDateChange('');
                                 }
                             }}
-                            className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+                            className="w-32 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground"
                         />
                         <button 
                             type='button'
                             onClick={calculateAge}
-                            className='px-3 py-2 bg-blue-500 text-sm rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white'
+                            className='px-3 py-2 bg-[var(--primary)] text-sm rounded-md hover:bg-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-blue-500 text-white'
                         >
                             Calculate Age
                         </button>
@@ -169,7 +169,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                         pattern='[0-9]*'
                         value={patient.age}
                         onChange={(e) => handleChange('age', e.target.value)}
-                        className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+                        className="w-32 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground"
                     />
                 </div>
 
@@ -186,7 +186,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                                 value='M'
                                 checked={patient.sex === 'M'}
                                 onChange={(e) => onUpdatePatient({ sex: e.target.value })}
-                                className='w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300'
+                                className='w-4 h-4 text-[var(--primary-strong)] focus:ring-blue-500 border-input'
                             />
                             <span className='text-sm'>M</span>
                         </label>
@@ -198,7 +198,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                                 value='F'
                                 checked={patient.sex === 'F'}
                                 onChange={(e) => onUpdatePatient({ sex: e.target.value })}
-                                className='w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300'
+                                className='w-4 h-4 text-[var(--primary-strong)] focus:ring-blue-500 border-input'
                             />
                             <span className='text-sm'>F</span>
                         </label>
@@ -217,7 +217,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                         pattern='[0-9]*'
                         value={patient.phone_number}
                         onChange={(e) => handleChange('phone_number', e.target.value)}
-                        className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+                        className="w-64 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground"
                     />
                 </div>
 
@@ -230,7 +230,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                         type='text'
                         value={patient.address}
                         onChange={(e) => handleChange('address', e.target.value)}
-                        className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+                        className="w-64 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground"
                     />
                 </div>
 
@@ -243,7 +243,7 @@ export default function PatientInfo({ patient, onUpdatePatient, isViewMode}: Pro
                         type='text'
                         value={patient.face_id}
                         onChange={(e) => handleChange('face_id', e.target.value)}
-                        className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
+                        className="w-64 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card text-foreground"
                     />
                 </div>
 

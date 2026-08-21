@@ -161,7 +161,7 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
         <div className="flex justify-end gap-4">
           <button
             type="button"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-[var(--primary)] text-white px-4 py-2 rounded hover:bg-[var(--primary-strong)]"
             onClick={() => {
               handleSave()
               onClose()
@@ -171,7 +171,7 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
           </button>
           <button
             type="button"
-            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+            className="bg-secondary text-secondary-foreground px-4 py-2 rounded hover:opacity-90"
             onClick={e => onClose()}
           >
             Print

@@ -14,6 +14,7 @@ import { getPatient } from "@/lib/api/patient/getPatients";
 import { getVisit } from "@/lib/api/visit/getVisit";
 import { updatePatient } from "@/lib/api/patient/updatePatient";
 import formatDate from "@/helper/format_date";
+import PixelMascot from "@/components/mascot/PixelMascot";
 
 interface Visit {
   visit_id: number;
@@ -50,7 +51,7 @@ interface PatientData {
 
 const DataField = ({ label, value }: { label: string; value: any }) => (
   <div>
-    <p className="text-sm font-medium text-gray-500">{label}</p>
+    <p className="text-sm font-medium text-muted-foreground">{label}</p>
     <p className="mt-1">{value || 'N/A'}</p>
   </div>
 );
@@ -165,28 +166,55 @@ export default function PatientDetailsPage() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading patient details...</div>;
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
+        <PixelMascot pose="working" size={72} energy={1.6} />
+        <p className="text-sm text-muted-foreground">Pulling up the patient record…</p>
+      </div>
+    );
   }
-  
+
   if (!patientData) {
-    return <div className="flex items-center justify-center h-screen">Patient not found.</div>;
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-center">
+        <PixelMascot pose="thinking" size={72} energy={0.9} />
+        <h2 className="text-lg font-bold text-foreground">Patient not found</h2>
+        <p className="max-w-[40ch] text-sm text-muted-foreground">
+          That record isn&apos;t at the selected screening site. Try switching location, or go back to the list.
+        </p>
+        <Button onClick={handleBack} className="mt-1">Back to patient list</Button>
+      </div>
+    );
   }
 
   const { patient, visits } = patientData;
   const displayPatient = isEditing ? editedPatient : patient;
 
   return (
-    <div className="w-full mx-auto p-6 max-w-[1800px]">
+    <div className="w-full mx-auto max-w-[1800px]">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <Button
-          variant="ghost"
-          onClick={handleBack}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeftIcon className="w-4 h-4" />
-          Back to Patient List
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            onClick={handleBack}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeftIcon className="w-4 h-4" />
+            Back
+          </Button>
+          <div className="hidden h-8 w-px bg-border sm:block" aria-hidden />
+          <PixelMascot pose="idle" size={38} energy={1} className="hidden sm:block" />
+          <div>
+            <p className="eyebrow">Patient record</p>
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-foreground">
+              {displayPatient?.english_name || displayPatient?.khmer_name || 'Unnamed patient'}
+              <span className="ml-2 text-sm font-medium text-muted-foreground">
+                {visits.length} {visits.length === 1 ? 'visit' : 'visits'}
+              </span>
+            </h1>
+          </div>
+        </div>
         
         <div className="flex items-center gap-2">
           {isEditing && (
@@ -210,7 +238,7 @@ export default function PatientDetailsPage() {
           <Card className="sticky top-6">
             <CardHeader>
               <div className="flex items-center gap-3 mb-4">
-                <PersonIcon className="h-8 w-8 text-blue-600" />
+                <PersonIcon className="h-8 w-8 text-[var(--primary-strong)]" />
                 <div>
                   <CardTitle className="text-xl">
                     {displayPatient?.english_name || 'N/A'}
@@ -224,13 +252,13 @@ export default function PatientDetailsPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-x-4 gap-y-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">English Name</label>
+                  <label className="text-sm font-medium text-muted-foreground">English Name</label>
                   {isEditing ? (
                     <input
                       type="text"
                       value={editedPatient?.english_name || ''}
                       onChange={(e) => handleInputChange('english_name', e.target.value)}
-                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                      className="mt-1 block w-full rounded-md border border-input px-3 py-2"
                     />
                   ) : (
                     <p className="mt-1">{patient.english_name || 'N/A'}</p>
@@ -238,13 +266,13 @@ export default function PatientDetailsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Khmer Name</label>
+                  <label className="text-sm font-medium text-muted-foreground">Khmer Name</label>
                   {isEditing ? (
                     <input
                       type="text"
                       value={editedPatient?.khmer_name || ''}
                       onChange={(e) => handleInputChange('khmer_name', e.target.value)}
-                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                      className="mt-1 block w-full rounded-md border border-input px-3 py-2"
                     />
                   ) : (
                     <p className="mt-1">{patient.khmer_name || 'N/A'}</p>
@@ -252,13 +280,13 @@ export default function PatientDetailsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Date of Birth</label>
+                  <label className="text-sm font-medium text-muted-foreground">Date of Birth</label>
                   {isEditing ? (
                     <input
                       type="date"
                       value={editedPatient?.date_of_birth || ''}
                       onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
-                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                      className="mt-1 block w-full rounded-md border border-input px-3 py-2"
                     />
                   ) : (
                     <p className="mt-1">{formatDate(patient.date_of_birth)}</p>
@@ -266,19 +294,19 @@ export default function PatientDetailsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Age</label>
+                  <label className="text-sm font-medium text-muted-foreground">Age</label>
                   <p className="mt-1">
                     {calculateAge(displayPatient?.date_of_birth || '')} years
                   </p>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Sex</label>
+                  <label className="text-sm font-medium text-muted-foreground">Sex</label>
                   {isEditing ? (
                     <select
                       value={editedPatient?.sex || ''}
                       onChange={(e) => handleInputChange('sex', e.target.value)}
-                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                      className="mt-1 block w-full rounded-md border border-input px-3 py-2"
                     >
                       <option value="M">Male</option>
                       <option value="F">Female</option>
@@ -289,13 +317,13 @@ export default function PatientDetailsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Phone Number</label>
+                  <label className="text-sm font-medium text-muted-foreground">Phone Number</label>
                   {isEditing ? (
                     <input
                       type="tel"
                       value={editedPatient?.phone_number || ''}
                       onChange={(e) => handleInputChange('phone_number', e.target.value)}
-                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                      className="mt-1 block w-full rounded-md border border-input px-3 py-2"
                     />
                   ) : (
                     <p className="mt-1">{patient.phone_number || 'N/A'}</p>
@@ -303,25 +331,25 @@ export default function PatientDetailsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Face ID</label>
+                  <label className="text-sm font-medium text-muted-foreground">Face ID</label>
                   <p className="mt-1">{patient.face_id || 'N/A'}</p>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Last Updated</label>
+                  <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
                   <p className="mt-1 text-sm">
-                    {patient.lastUpdated ? new Date(patient.lastUpdated).toLocaleString() : 'N/A'}
+                    {patient.last_updated_at ? new Date(patient.last_updated_at).toLocaleString() : 'N/A'}
                   </p>
                 </div>
               </div>
 
               <div className="pt-2">
-                <label className="text-sm font-medium text-gray-500">Address</label>
+                <label className="text-sm font-medium text-muted-foreground">Address</label>
                 {isEditing ? (
                   <textarea
                     value={editedPatient?.address || ''}
                     onChange={(e) => handleInputChange('address', e.target.value)}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                    className="mt-1 block w-full rounded-md border border-input px-3 py-2"
                     rows={2}
                   />
                 ) : (
@@ -346,7 +374,7 @@ export default function PatientDetailsPage() {
                 </div>
                 {/* Search Bar */}
                 <div className="relative mt-4">
-                  <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="date"
                     placeholder="Search by date..."
@@ -359,7 +387,7 @@ export default function PatientDetailsPage() {
               <CardContent>
                 <div className="space-y-3 max-h-[calc(100vh-350px)] overflow-y-auto">
                   {filteredVisits.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">
+                    <p className="text-center text-muted-foreground py-8">
                       {dateSearch ? 'No visits found for this date' : 'No visits recorded'}
                     </p>
                   ) : (
@@ -367,43 +395,43 @@ export default function PatientDetailsPage() {
                       <div
                         key={visit.visit_id}
                         onClick={() => handleVisitClick(visit)}
-                        className="p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md hover:border-blue-300 bg-white"
+                        className="p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md hover:border-[var(--primary)] bg-card"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              <CalendarIcon className="h-5 w-5 text-blue-600" />
-                              <span className="font-bold text-lg text-gray-900">
+                              <CalendarIcon className="h-5 w-5 text-[var(--primary-strong)]" />
+                              <span className="font-bold text-lg text-foreground">
                                 {formatDate(visit.visit_date)}
                               </span>
                             </div>
-                            <div className="text-sm text-gray-600 ml-7">
+                            <div className="text-sm text-muted-foreground ml-7">
                               Queue: <span className="font-medium">{visit.queue_no}</span> • {visit.location_name}
                             </div>
                             <div className="flex gap-2 mt-3 ml-7 flex-wrap">
                               {visit.has_vitals && (
-                                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded font-medium">
+                                <span className="text-xs bg-[var(--success-soft)] text-[var(--success)] px-2 py-1 rounded font-medium">
                                   Triage
                                 </span>
                               )}
                               {visit.has_seva && (
-                                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded font-medium">
+                                <span className="text-xs bg-[var(--lantern-soft)] text-[var(--lantern-ink)] px-2 py-1 rounded font-medium">
                                   Seva
                                 </span>
                               )}
                               {visit.has_physiotherapy && (
-                                <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded font-medium">
+                                <span className="text-xs bg-[var(--warning-soft)] text-[var(--warning)] px-2 py-1 rounded font-medium">
                                   Physiotherapy
                                 </span>
                               )}
                               {visit.has_consultation && (
-                                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium">
+                                <span className="text-xs bg-[var(--primary-soft)] text-[var(--primary-strong)] px-2 py-1 rounded font-medium">
                                   Consultation
                                 </span>
                               )}
                             </div>
                           </div>
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-muted-foreground">
                             Updated: {new Date(visit.last_updated_at).toLocaleDateString()}
                           </div>
                         </div>
@@ -438,7 +466,7 @@ export default function PatientDetailsPage() {
               <CardContent>
                 {isLoadingVisit ? (
                   <div className="flex items-center justify-center py-12">
-                    <p className="text-gray-500">Loading visit details...</p>
+                    <p className="text-muted-foreground">Loading visit details...</p>
                   </div>
                 ) : visitDetails ? (
                   <Tabs defaultValue="triage" className="w-full">
@@ -496,7 +524,7 @@ export default function PatientDetailsPage() {
                       )}
 
                       {!visitDetails.vitals && !visitDetails.presenting_complaint && (
-                        <p className="text-center text-gray-500 py-8">No triage data available</p>
+                        <p className="text-center text-muted-foreground py-8">No triage data available</p>
                       )}
                     </TabsContent>
 
@@ -518,7 +546,7 @@ export default function PatientDetailsPage() {
                           )}
                         </div>
                       ) : (
-                        <p className="text-center text-gray-500 py-8">No SEVA data available</p>
+                        <p className="text-center text-muted-foreground py-8">No SEVA data available</p>
                       )}
                     </TabsContent>
 
@@ -531,10 +559,10 @@ export default function PatientDetailsPage() {
                           
                           {visitDetails.physiotherapy.painpoints?.length > 0 && (
                             <div>
-                              <p className="text-sm font-medium text-gray-500 mb-3">Pain Points</p>
+                              <p className="text-sm font-medium text-muted-foreground mb-3">Pain Points</p>
                               <div className="space-y-2">
                                 {visitDetails.physiotherapy.painpoints.map((point: any, index: number) => (
-                                  <div key={point.id} className="bg-gray-50 p-3 rounded-md border">
+                                  <div key={point.id} className="bg-muted p-3 rounded-md border">
                                     <p className="text-sm">
                                       <span className="font-medium">Point {index + 1}:</span> X: {point.x_coord.toFixed(2)}, Y: {point.y_coord.toFixed(2)}
                                     </p>
@@ -545,7 +573,7 @@ export default function PatientDetailsPage() {
                           )}
                         </div>
                       ) : (
-                        <p className="text-center text-gray-500 py-8">No physiotherapy data available</p>
+                        <p className="text-center text-muted-foreground py-8">No physiotherapy data available</p>
                       )}
                     </TabsContent>
 
@@ -563,10 +591,10 @@ export default function PatientDetailsPage() {
                           
                           {visitDetails.consultation.require_referral && visitDetails.consultation.referrals?.length > 0 && (
                             <div>
-                              <p className="text-sm font-medium text-gray-500 mb-3">Referrals</p>
+                              <p className="text-sm font-medium text-muted-foreground mb-3">Referrals</p>
                               <div className="space-y-3">
                                 {visitDetails.consultation.referrals.map((referral: any) => (
-                                  <div key={referral.id} className="bg-blue-50 p-4 rounded-md border border-blue-200">
+                                  <div key={referral.id} className="bg-[var(--primary-soft)] p-4 rounded-md border border-[var(--primary)]/25">
                                     <div className="grid grid-cols-2 gap-3">
                                       <DataField label="Referral Date" value={formatDate(referral.referral_date)} />
                                       <DataField label="Type" value={referral.referral_type} />
@@ -584,13 +612,13 @@ export default function PatientDetailsPage() {
                           )}
                         </div>
                       ) : (
-                        <p className="text-center text-gray-500 py-8">No consultation data available</p>
+                        <p className="text-center text-muted-foreground py-8">No consultation data available</p>
                       )}
                     </TabsContent>
                   </Tabs>
                 ) : (
                   <div className="flex items-center justify-center py-12">
-                    <p className="text-gray-500">Failed to load visit details</p>
+                    <p className="text-muted-foreground">Failed to load visit details</p>
                   </div>
                 )}
               </CardContent>

@@ -5,11 +5,11 @@ interface StockLevelBadgeProps {
 export function StockLevelBadge({ level }: StockLevelBadgeProps) {
     const getStockLevelColor = (level: "low" | "medium" | "high" | "no stock"): string => {
       switch (level) {
-        case "low": return "bg-yellow-500"
-        case "medium": return "bg-blue-500"
-        case "high": return "bg-green-500"
-        case "no stock": return "bg-red-600"
-        default: return "bg-gray-500"
+        case "low": return "bg-[var(--warning)]"
+        case "medium": return "bg-[var(--primary)]"
+        case "high": return "bg-[var(--success)]"
+        case "no stock": return "bg-[var(--destructive)]"
+        default: return "bg-muted-foreground"
       }
     }
   
