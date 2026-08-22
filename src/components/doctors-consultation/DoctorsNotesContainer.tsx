@@ -91,8 +91,8 @@ export default function DoctorsNotesContainer({ patient }: Props) {
   }, [])
 
   return (
-    <div className="flex flex-col gap-4 bg-beige-default px-4 py-2 rounded-md border-[1px] lg:w-[30%]">
-      <h2 className="text-[20px] font-semibold">Consultation Notes</h2>
+    <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-sm)]">
+      <h2 className="text-sm font-bold tracking-tight text-foreground">Consultation Notes</h2>
       <div className="flex w-full h-[40%]">
         <VerticalLabelInputPair 
           value={notes}
@@ -100,7 +100,7 @@ export default function DoctorsNotesContainer({ patient }: Props) {
         />
       </div>
 
-      <h2 className="text-[20px] font-semibold">Prescription</h2>
+      <h2 className="text-sm font-bold tracking-tight text-foreground">Prescription</h2>
       <div className="flex w-full h-[40%]">
         <VerticalLabelInputPair 
           value={prescription}
@@ -109,7 +109,7 @@ export default function DoctorsNotesContainer({ patient }: Props) {
       </div>
 
       <div className="flex gap-4">
-        <h2 className="text-[20px] font-semibold">Referral Needed</h2>
+        <h2 className="text-sm font-bold tracking-tight text-foreground">Referral Needed</h2>
         
         <div className="flex gap-2 items-center">
           <input

@@ -44,8 +44,8 @@ export default function PatientDetails({ patient }: Props) {
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      <h1 className="font-semibold text-[20px]">Patient Details</h1>
-      <div className="flex flex-col gap-2 justify-between">
+      <h2 className="text-sm font-bold tracking-tight text-foreground">Patient Details</h2>
+      <dl className="flex flex-col">
         <LabelDescriptionPair 
           label="English Name"
           description={patientDetails.english_name || "N/A"}
@@ -70,7 +70,7 @@ export default function PatientDetails({ patient }: Props) {
           label="Phone Number"
           description={patientDetails.phone_number || "N/A"}
         />
-      </div>
+      </dl>
     </div>
   );
 }

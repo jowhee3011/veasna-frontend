@@ -60,8 +60,8 @@ export default function PhysiotherapyNotesContainer({ patient }: Props) {
   }, [])
 
   return (
-    <div className="flex flex-col gap-4 bg-beige-default px-4 py-2 rounded-md border-[1px] lg:w-[30%]">
-      <h2 className="text-[20px] font-semibold">Physiotherapy Notes</h2>
+    <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-sm)]">
+      <h2 className="text-sm font-bold tracking-tight text-foreground">Physiotherapy Notes</h2>
       <div className="flex w-full h-[40%]">
         <VerticalLabelInputPair 
           onChangeFunction={setNotes}
@@ -70,7 +70,7 @@ export default function PhysiotherapyNotesContainer({ patient }: Props) {
       </div>
 
       <div>
-        <h2 className="text-[20px] font-semibold">Body Chart Indication</h2>
+        <h2 className="text-sm font-bold tracking-tight text-foreground">Body Chart Indication</h2>
         <div className="flex flex-row w-full">
           <DottedImage 
             imageUrl="/bodychart.jpg"

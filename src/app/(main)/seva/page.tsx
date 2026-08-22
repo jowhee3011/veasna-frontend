@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import StationPageShell from "@/components/shared/StationPageShell";
+import StationWorkspace from "@/components/shared/StationWorkspace";
 import SevaNotesContainer from "@/components/seva/SevaNotesContainer";
 import PatientContainer from "@/components/shared/read-only/patient-container/PatientContainer";
 import TriageContainer from "@/components/shared/read-only/triage-container/TriageContainer";
@@ -17,11 +18,11 @@ export default function Seva() {
       onSelectPatient={setSelectedPatient}
     >
       {selectedPatient && (
-        <div className="grid gap-5 lg:grid-cols-3">
-          <PatientContainer selectedPatient={selectedPatient} />
-          <TriageContainer selectedPatient={selectedPatient} />
-          <SevaNotesContainer patient={selectedPatient} />
-        </div>
+        <StationWorkspace
+          reference={<PatientContainer selectedPatient={selectedPatient} />}
+          triage={<TriageContainer selectedPatient={selectedPatient} />}
+          work={<SevaNotesContainer patient={selectedPatient} />}
+        />
       )}
     </StationPageShell>
   );

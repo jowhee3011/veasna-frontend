@@ -48,8 +48,8 @@ export default function VitalsDetails({ patient }: Props) {
 
   return (
     <div>
-      <h2 className="text-[20px] font-semibold mb-2">Vitals</h2>
-      <div className="flex flex-col gap-2 justify-between">
+      <h2 className="mb-2 text-sm font-bold tracking-tight text-foreground">Vitals</h2>
+      <dl className="flex flex-col">
         <LabelDescriptionPair 
           label="Height"
           description={vitalsDetails.height?.toString() ?? "N/A"} 
@@ -74,7 +74,7 @@ export default function VitalsDetails({ patient }: Props) {
           label="Temperature"
           description={vitalsDetails.temperature?.toString() ?? "N/A"} 
         />
-      </div>
+      </dl>
     </div>
   );
 }
