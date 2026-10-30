@@ -78,9 +78,9 @@ the progress model knows that.
 - **Light and dark themes**, driven entirely by design tokens.
 - **Runs as a desktop app** via Electron, or in any browser on the network.
 
-## The assistant
+## Veasna the firefly
 
-The chatbot is deliberately small: no NLP library, no model, no network call at
+Veasna is a chatbot curated deliberately small: no NLP library, no model, no network call at
 answer time. Its entire runtime dependency closure is **three source files and
 zero npm packages**.
 
