@@ -41,14 +41,11 @@ export default function Pharmacy() {
     }
   }, [location]);
 
-  useEffect(() => {
-    if (!location) {
-      toast(SET_LOCATION_MESSAGE);
-      setIsLoading(false);
-      return;
-    }
-    refreshDrugs();
-  }, [location, refreshDrugs]);
+    useEffect(() => {
+      if (!location) {
+        toast(SET_LOCATION_MESSAGE);
+      }
+    }, [location]);
 
   const filteredDrugs = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();

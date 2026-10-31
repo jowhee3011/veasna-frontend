@@ -19,17 +19,21 @@ export default function PatientListPage() {
   const token = useUserStore((state) => state.user?.token);
 
   const [patients, setPatients] = useState<PatientInfo[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const refresh = useCallback(async () => {
-    if (!token || !location) return;
-    setIsLoading(true);
-    try {
-      const db = await getPatientsByLocation(location.id, token);
-      setPatients(Array.isArray(db) ? db : []);
-    } finally {
-      setIsLoading(false);
+  useEffect(() => {
+    if (!location) {
+      toast(SET_LOCATION_MESSAGE);
+    }
+  }, [location]);
+
+  // API helper functions
+  async function refreshAllPatients() {
+    if (token && location) {
+      console.log(location)
+      const db_patients = await getPatientsByLocation(location.id,  token.toString());
+      setAllPatients(db_patients);
+      setPatients(db_patients);
     }
   }, [token, location]);
 

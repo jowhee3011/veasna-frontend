@@ -1,23 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import StationPageShell from "@/components/shared/StationPageShell";
+import SearchBar from "@/components/shared/SearchBar";
 import PatientDetails from "@/components/shared/read-only/patient-container/PatientDetails";
+import { QueuedPatient } from "@/lib/types/patient";
+import { useEffect, useState } from "react";
+import NoPatientSelected from "@/components/shared/NoPatientSelected";
 import { TriageTabs } from "@/components/triage/TriageTabs";
 import { QueuedPatient } from "@/lib/types/patient";
 
 export default function Triage() {
   const [selectedPatient, setSelectedPatient] = useState<QueuedPatient | null>(null);
 
-  return (
-    <StationPageShell
-      station="triage"
-      selectedPatient={selectedPatient}
-      onSelectPatient={setSelectedPatient}
-    >
-      {selectedPatient && (
-        <div className="grid gap-5 xl:grid-cols-[minmax(280px,340px)_1fr]">
-          <aside className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-sm)]">
+  useEffect(() => {
+    if (!location) {
+      toast(SET_LOCATION_MESSAGE);
+    }
+  }, [location]);
+
+
+    if (!selectedPatient) {
+        return (
+        <div className="flex flex-col w-full h-screen gap-y-5">
+            <SearchBar onSelectPatient={setSelectedPatient} />
+            <NoPatientSelected/>
+        </div>
+        );
+    }
+
+    return (
+      <div className="flex justify-between">
+        <div className="flex-1 mr-[30px] w-[30%]">
+          <SearchBar onSelectPatient={setSelectedPatient} />
+          <div className="bg-beige-default p-7 mt-[30px]">
             <PatientDetails patient={selectedPatient} />
           </aside>
           <div className="min-w-0">

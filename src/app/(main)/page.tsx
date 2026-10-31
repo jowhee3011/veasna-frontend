@@ -35,20 +35,17 @@ export default function HomePage() {
   const [patients, setPatients] = useState<PatientInfo[]>([]);
   const [queuePatients, setQueuePatients] = useState<QueuedPatient[]>([]);
 
-  const refreshQueue = useCallback(async () => {
-    if (!token || !location) return;
-    const date = new Date().toISOString().slice(0, 10);
-    const queue = await getQueue(location.id, date, token);
-    const list: QueuedPatient[] = Array.isArray(queue) ? queue : [];
-    setQueuePatients(list);
-    // Fill in each visit's station progress so the queue rows show live pips.
-    await syncQueue(list, token);
-  }, [token, location, syncQueue]);
-
   useEffect(() => {
     if (!location) {
       toast(SET_LOCATION_MESSAGE);
-      return;
+    }
+  }, [location]);
+  
+  // API helper functions
+  async function refreshAllPatients() {
+    if (token && location) {
+      const db_patients = await getPatientsByLocation(location.id,  token);
+      setPatients(db_patients);
     }
     if (!token) return;
     getPatientsByLocation(location.id, token).then((db) => setPatients(db ?? []));
