@@ -1,46 +1,25 @@
 "use client";
 
+import Link from "next/link";
 import { useUserStore } from "@/stores/useUserStore";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function Footer() {
-  const [isHovered, setIsHovered] = useState(false);
-  const removeUser = useUserStore((state) => state.removeUser)
-  const router = useRouter()
-
-  const handleLogout = () => {
-    removeUser()
-    router.push('/login')
-  }
+  const username = useUserStore((state) => state.user?.username);
 
   return (
-    <>
-      {/* Hover hotzone */}
-      <div
-        className="fixed bottom-0 left-0 w-full h-4 z-40"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      />
-
-      {/* Footer itself */}
-      <footer
-        className={`fixed bottom-0 left-0 w-full bg-gray-800 text-white py-4 px-6 z-50 transition-transform duration-300 ${
-          isHovered ? "translate-y-0" : "translate-y-full"
-        }`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className="flex justify-between items-center text-sm">
-          <p className="text-white-default">© 2025 Veasna. All rights reserved.</p>
-          <button
-            onClick={handleLogout}
-            className="text-white-default hover:text-gray-300 hover:cursor-pointer transition duration-200"
-          >
-            Logout
-          </button>
+    <footer className="relative z-[1] mt-8 border-t border-border/70">
+      <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-5 py-4 text-xs text-muted-foreground">
+        <p>© {new Date().getFullYear()} Veasna · Built for community health screenings</p>
+        <div className="flex items-center gap-4">
+          {username && <span>Signed in as <strong className="text-foreground">{username}</strong></span>}
+          <span className="hidden sm:inline">
+            Press <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">⌘K</kbd> to ask Veasna
+          </span>
+          <Link href="/patient-list" className="font-medium text-[var(--primary-strong)] hover:underline">
+            Patient records
+          </Link>
         </div>
-      </footer>
-    </>
+      </div>
+    </footer>
   );
 }

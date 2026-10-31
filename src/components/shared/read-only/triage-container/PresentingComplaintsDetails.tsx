@@ -1,7 +1,7 @@
 "use client";
 
 import { QueuedPatient } from "@/lib/types/patient";
-import VerticalLabelInputPair from "../../VerticalLabelInputPair";
+import ReadOnlyField from "../ReadOnlyField";
 import { useEffect, useState } from "react";
 import { getPresentingComplaint } from "@/lib/api/visit/getPresentingComplaints";
 import { PresentingComplaint } from "@/lib/types/medicalHistory";
@@ -47,36 +47,16 @@ export default function PresentingComplaintsDetails({ patient }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <h2 className="text-[20px] font-semibold">Presenting Complaints</h2>
+    <div className="flex w-full flex-col gap-3">
+      <h2 className="text-sm font-bold tracking-tight text-foreground">Presenting Complaints</h2>
 
-      <VerticalLabelInputPair
-        label="History of Presenting Illness"
-        bolded={false}
-        value={complaint.history || "N/A"}
-        readOnly
-      />
+      <ReadOnlyField label="History of Presenting Illness" value={complaint.history} />
 
-      <VerticalLabelInputPair
-        label="Red Flags"
-        bolded={false}
-        value={complaint.red_flags || "N/A"}
-        readOnly
-      />
+      <ReadOnlyField label="Red Flags" value={complaint.red_flags} />
 
-      <VerticalLabelInputPair
-        label="Systems Review"
-        bolded={false}
-        value={complaint.systems_review || "N/A"}
-        readOnly
-      />
+      <ReadOnlyField label="Systems Review" value={complaint.systems_review} />
 
-      <VerticalLabelInputPair
-        label="Drug Allergies"
-        bolded={false}
-        value={complaint.drug_allergies || "N/A"}
-        readOnly
-      />
+      <ReadOnlyField label="Drug Allergies" value={complaint.drug_allergies} />
     </div>
   );
 }

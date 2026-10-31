@@ -1,25 +1,22 @@
-export default function LoadingSpinner() {
+"use client";
+
+import PixelMascot from "@/components/mascot/PixelMascot";
+
+interface Props {
+  /** Fill the viewport (app boot) rather than sitting inline. */
+  fullscreen?: boolean;
+  message?: string;
+}
+
+export default function LoadingSpinner({ fullscreen = true, message = "Lighting the lantern…" }: Props) {
   return (
-    <div style={{
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center"
-    }}>
-      <div style={{
-        border: "6px solid #f3f3f3",
-        borderTop: "6px solid #3498db",
-        borderRadius: "50%",
-        width: "50px",
-        height: "50px",
-        animation: "spin 1s linear infinite"
-      }} />
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg);}
-          100% { transform: rotate(360deg);}
-        }
-      `}</style>
+    <div
+      className={`flex flex-col items-center justify-center gap-3 ${
+        fullscreen ? "min-h-screen" : "py-10"
+      }`}
+    >
+      <PixelMascot pose="working" size={fullscreen ? 80 : 52} animated energy={1.7} />
+      <p className="text-sm text-muted-foreground">{message}</p>
     </div>
   );
 }

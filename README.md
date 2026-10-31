@@ -1,36 +1,166 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+<img src="docs/mascot.png" width="120" alt="Veasna, the pixel-art firefly mascot" />
 
-First, run the development server:
+# Veasna
+
+**An electronic medical record built for pop-up health screenings.**
+
+Registration to pharmacy in one place — and always a clear answer to
+*“where has this patient got to?”*
+
+[![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Electron](https://img.shields.io/badge/Electron-37-47848F?logo=electron&logoColor=white)](https://electronjs.org)
+
+</div>
+
+<div align="center">
+  <img src="docs/home.png" alt="The Veasna home screen: today's queue with per-station progress on the left, patient registration on the right" width="100%" />
+</div>
+
+---
+
+## What this is
+
+Veasna was built for student volunteers running community health screenings with
+**Project Battambang** in Cambodia. It works under LAN networks, where no 
+internet is required and is built to be beginner friendly for non-technical
+volunteers to avoid disrupting their workflow & data records/archival 
+across a handful of stations.
+
+## The screening journey
+
+Every patient moves through the same set of stations, and the app treats that
+journey as the thing it is actually tracking:
+
+```
+Registration → Triage → Seva → Physiotherapy → Consultation → Pharmacy
+```
+
+| Station | What happens |
+| --- | --- |
+| **Registration** | Patient details captured, queue number issued |
+| **Triage** | Vitals, presenting complaint, medical history, visual acuity |
+| **Seva** | Eye screening, Snellen with and without pinhole, refraction follow-up |
+| **Physiotherapy** | Pain mapping on a body chart, assessment notes |
+| **Consultation** | Doctor's assessment, prescription, referral flagging |
+| **Pharmacy** | Dispensing against the prescription, live stock levels |
+
+Seva, physiotherapy and pharmacy are optional — not every patient needs them, and
+the progress model knows that.
+
+## Features
+
+- **Live station progress.** Every queue row, search result and patient record
+  shows how far that patient has got. The backend has no status column;
+  completion is derived from which per-visit records exist, in one place, so
+  every screen agrees.
+- **A queue assistant you can talk to.** Press <kbd>⌘K</kbd> (or click the
+  mascot) and ask in plain language: *“status of 12A”*, *“who's waiting for
+  consult?”*, *“any referrals today?”*. Answered entirely in the browser — no
+  model call, no dependency, no round trip.
+- **In-flow coaching.** The mascot gives each station a short, situation-aware
+  line — what to do here, what's blocking, what's next — so a volunteer can work
+  out the flow without being trained on it first.
+- **Multi-site.** Screening locations are first-class; everything is filtered by
+  the site you're at, and the selection persists locally until 6am the next day.
+- **Resilient fetching.** Patient and visit requests revalidate with ETags and
+  fall back to their last cached response when a request fails, so a dropped
+  link degrades to stale data rather than an error screen.
+- **Light and dark themes**, driven entirely by design tokens.
+- **Runs as a desktop app** via Electron, or in any browser on the network.
+
+## Veasna the firefly
+
+Veasna is a chatbot curated deliberately small: no NLP library, no model, no network call at
+answer time. Its entire runtime dependency closure is **three source files and
+zero npm packages**.
+
+How our firefly talks:
+
+1. **Fetch** — pull today's queue and each visit record (concurrency-capped,
+   ETag-revalidated).
+2. **Interpret** — `deriveStatus()` turns a visit into per-station completion.
+   This is the single source of truth for what "done" means.
+3. **Answer** — `respond(text, context)` is a pure function over data the app has
+   already loaded. It normalises the text, extracts any queue number, patient
+   name or station mentioned, scores eleven intents by keyword hits, and hands
+   the winner a handler.
+
+Everything implemented is run on the local machine without require any online interactions with internet servers
+
+## Tech stack
+
+**Frontend** — Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS 4,
+Zustand for state (with persisted, TTL-expiring local storage), Radix UI
+primitives, Electron for desktop packaging.
+
+**Backend** — Node/Express + PostgreSQL, in a separate repository:
+[**Runus01/veasna-backend**](https://github.com/Runus01/veasna-backend).
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 20+
+- A running [Veasna backend](https://github.com/Runus01/veasna-backend) with its
+  PostgreSQL database
+
+### Setup
+
+```bash
+git clone https://github.com/jowhee3011/veasna-frontend.git
+cd veasna-frontend
+npm install
+```
+
+Create `.env` in the project root and point it at your backend:
+
+```env
+NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
+```
+
+### Run
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app starts on **http://localhost:3001** (the backend is expected on `3000`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Sign in with any name — there are no passwords. Names identify who recorded each
+entry, and typing a new one creates that user. Then pick a screening site from
+the location menu in the top bar; every page is filtered by it.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Desktop app
 
-## Learn More
+With the dev server already running:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run electron
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Electron loads `http://localhost:3001` by default. Override with the `VEASNA_URL`
+environment variable to point it somewhere else.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Scripts
 
-## Deploy on Vercel
+| Script | Purpose |
+| --- | --- |
+| `npm run dev` | Dev server on port 3001 (Turbopack) |
+| `npm run build` | Production build |
+| `npm start` | Serve the production build |
+| `npm run lint` | ESLint |
+| `npm run electron` | Launch the desktop shell |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+> **Deploying to a screening site:** `npm start` currently binds to a hard-coded
+> host address in `package.json`. Change the `-H` flag to the LAN IP of the
+> machine serving the app, so other laptops at the site can reach it.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Acknowledgements
+
+Built to support student organisers volunteering with Project Battambang.

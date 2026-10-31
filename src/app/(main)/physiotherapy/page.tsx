@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
+import { useState } from "react";
+import StationPageShell from "@/components/shared/StationPageShell";
+import StationWorkspace from "@/components/shared/StationWorkspace";
 import PhysiotherapyNotesContainer from "@/components/physiotherapy/PhysiotherapyNotesContainer";
-import NoPatientSelected from "@/components/shared/NoPatientSelected";
 import PatientContainer from "@/components/shared/read-only/patient-container/PatientContainer";
 import TriageContainer from "@/components/shared/read-only/triage-container/TriageContainer";
-import SearchBar from "@/components/shared/SearchBar";
 import { QueuedPatient } from "@/lib/types/patient";
 import { SET_LOCATION_MESSAGE } from "@/messages/info";
 import { useLocationStore } from "@/stores/useLocationStore";
@@ -32,13 +33,18 @@ export default function Physiotherapy() {
   }
 
   return (
-    <div className="flex flex-col gap-2 lg:min-h-[70vh]">
-      <SearchBar onSelectPatient={setSelectedPatient} />
-      <div className="flex flex-col gap-2 mt-3 lg:w-full lg:flex-row lg:gap-4 lg:justify-evenly">
-        <PatientContainer selectedPatient = {selectedPatient}/>
-        <TriageContainer selectedPatient = {selectedPatient}/>
-        <PhysiotherapyNotesContainer patient={selectedPatient} />
-      </div>
-    </div>
-  )
+    <StationPageShell
+      station="physiotherapy"
+      selectedPatient={selectedPatient}
+      onSelectPatient={setSelectedPatient}
+    >
+      {selectedPatient && (
+        <StationWorkspace
+          reference={<PatientContainer selectedPatient={selectedPatient} />}
+          triage={<TriageContainer selectedPatient={selectedPatient} />}
+          work={<PhysiotherapyNotesContainer patient={selectedPatient} />}
+        />
+      )}
+    </StationPageShell>
+  );
 }

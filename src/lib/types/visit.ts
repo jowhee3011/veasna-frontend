@@ -1,6 +1,6 @@
 import { HEF } from "./hef";
 import { VisualAcuity } from "./visualAcuity";
-import { PresentingComplaint } from "./medicalHistory";
+import { MedicalHistory, PresentingComplaint } from "./medicalHistory";
 import { Seva } from "./seva";
 import { Physiotherapy } from "./physiotherapy";
 import { Consultation } from "./consultation";
@@ -42,7 +42,7 @@ export interface VisitSummary {
     hef?: HEF;
     visual_acuity?: VisualAcuity;
     presenting_complaint?: PresentingComplaint;
-    history?: History;
+    history?: MedicalHistory;
     seva?: Seva;
     physiotherapy?: Physiotherapy;
     consultation?: Consultation;

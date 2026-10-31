@@ -60,7 +60,7 @@ export default function SevaNotesContainer({ patient }: Props) {
         }
         
         try {
-            const res = await postSeva(data, patient.visit_id)
+            await postSeva(data, patient.visit_id)
             setLeftWithPinholeNew("");
             setLeftWithoutPinholeNew("");
             setRightWithPinholeNew("");
@@ -79,9 +79,9 @@ export default function SevaNotesContainer({ patient }: Props) {
     }, [])
  
     return (
-        <div className="flex flex-col gap-4 bg-beige-default px-4 py-2 rounded-md border-[1px] lg:w-[30%]">
+        <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-sm)]">
 
-            <h2 className="text-[20px] font-semibold">New Snellen&apos;s Test</h2>
+            <h2 className="text-sm font-bold tracking-tight text-foreground">New Snellen&apos;s Test</h2>
             <div className="min-h-70 flex flex-col">
                 <div className="grid grid-cols-3 gap-x-4 gap-y-2 mb-[30px] items-center">
                     {/* Header Row */}
@@ -126,11 +126,11 @@ export default function SevaNotesContainer({ patient }: Props) {
             </div>
 
         <div className="flex flex-col gap-2 w-full">
-            <h2 className="text-[15px] font-semibold">Date of Referral</h2>
+            <h2 className="text-xs font-bold tracking-tight text-foreground">Date of Referral</h2>
             <input
             type="date"
             placeholder="DD/MM/YYYY"
-            className="bg-white border-[1px] rounded-sm p-2 w-32 text-black"
+            className="bg-card border-[1px] rounded-sm p-2 w-32 text-foreground"
             onChange={(e) => setDateOfReferral(e.target.value)}
             value={dateOfReferral}
             />

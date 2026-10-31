@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
+import { useState } from "react";
+import StationPageShell from "@/components/shared/StationPageShell";
+import StationWorkspace from "@/components/shared/StationWorkspace";
 import SevaNotesContainer from "@/components/seva/SevaNotesContainer";
-import NoPatientSelected from "@/components/shared/NoPatientSelected";
 import PatientContainer from "@/components/shared/read-only/patient-container/PatientContainer";
 import TriageContainer from "@/components/shared/read-only/triage-container/TriageContainer";
-import SearchBar from "@/components/shared/SearchBar";
 import { QueuedPatient } from "@/lib/types/patient";
 import { SET_LOCATION_MESSAGE } from "@/messages/info";
 import { useLocationStore } from "@/stores/useLocationStore";

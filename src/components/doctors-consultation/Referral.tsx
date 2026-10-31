@@ -5,7 +5,7 @@ import { postReferral } from "@/lib/api/visit/postReferral";
 import { Referral } from "@/lib/types/consultation";
 import { PatientInfo, QueuedPatient } from "@/lib/types/patient";
 import { useUserStore } from "@/stores/useUserStore";
-import { Ref, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface Props {
@@ -37,7 +37,7 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
     }
     
     try {
-      const res = await postReferral(data, patient.visit_id)
+      await postReferral(data, patient.visit_id)
       setReferralDate("");
       setReferralType([]);
       setIllness("");
@@ -161,7 +161,7 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
         <div className="flex justify-end gap-4">
           <button
             type="button"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-[var(--primary)] text-white px-4 py-2 rounded hover:bg-[var(--primary-strong)]"
             onClick={() => {
               handleSave()
               onClose()
@@ -171,8 +171,8 @@ export default function ReferralForm({ patient, patientInfo, retrievedReferral, 
           </button>
           <button
             type="button"
-            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-            onClick={e => onClose()}
+            className="bg-secondary text-secondary-foreground px-4 py-2 rounded hover:opacity-90"
+            onClick={() => onClose()}
           >
             Print
           </button>

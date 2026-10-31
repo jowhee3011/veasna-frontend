@@ -83,7 +83,7 @@ export default function DottedImage({ imageUrl, positions: initialPositions, onC
               e.stopPropagation();
               handleRemoveDot(index);
             }}
-            className="absolute w-2.5 h-2.5 bg-red-500 rounded-full -translate-x-1/2 -translate-y-1/2 cursor-pointer border-2 border-white box-border"
+            className="absolute w-2.5 h-2.5 bg-[var(--destructive)] rounded-full -translate-x-1/2 -translate-y-1/2 cursor-pointer border-2 border-white box-border"
             style={{
               left: `${pos.xCoord}%`,
               top: `${pos.yCoord}%`,

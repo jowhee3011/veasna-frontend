@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import SearchBar from "@/components/shared/SearchBar";
 import PatientDetails from "@/components/shared/read-only/patient-container/PatientDetails";
@@ -6,13 +6,9 @@ import { QueuedPatient } from "@/lib/types/patient";
 import { useEffect, useState } from "react";
 import NoPatientSelected from "@/components/shared/NoPatientSelected";
 import { TriageTabs } from "@/components/triage/TriageTabs";
-import { useLocationStore } from "@/stores/useLocationStore";
-import { SET_LOCATION_MESSAGE } from "@/messages/info";
-import toast from "react-hot-toast";
+import { QueuedPatient } from "@/lib/types/patient";
 
-export default function Traige() {
-  const location = useLocationStore((state) => state.currentLocation);
-
+export default function Triage() {
   const [selectedPatient, setSelectedPatient] = useState<QueuedPatient | null>(null);
 
   useEffect(() => {
@@ -37,12 +33,12 @@ export default function Traige() {
           <SearchBar onSelectPatient={setSelectedPatient} />
           <div className="bg-beige-default p-7 mt-[30px]">
             <PatientDetails patient={selectedPatient} />
+          </aside>
+          <div className="min-w-0">
+            <TriageTabs visit_id={selectedPatient.visit_id} />
           </div>
         </div>
-        
-        <div className="w-[65%]">
-          <TriageTabs visit_id={selectedPatient.visit_id}/>
-        </div>
-      </div>
-    )
+      )}
+    </StationPageShell>
+  );
 }
