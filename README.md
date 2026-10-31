@@ -26,15 +26,10 @@ Registration to pharmacy in one place — and always a clear answer to
 ## What this is
 
 Veasna was built for student volunteers running community health screenings with
-**Project Battambang** in Cambodia. A screening day is a pop-up clinic: a few
-hundred people arrive, pass through a handful of stations set up in a hall or a
-schoolyard, and leave the same day. There is often no reliable internet, and the
-people running each station are volunteers who may never have used the system
-before.
-
-That shapes everything here. The app runs on a laptop on a local network, keeps
-working when the link is flaky, and tries to teach itself to whoever is sitting
-in front of it.
+**Project Battambang** in Cambodia. It works under LAN networks, where no 
+internet is required and is built to be beginner friendly for non-technical
+volunteers to avoid disrupting their workflow & data records/archival 
+across a handful of stations.
 
 ## The screening journey
 
@@ -66,7 +61,7 @@ the progress model knows that.
 - **A queue assistant you can talk to.** Press <kbd>⌘K</kbd> (or click the
   mascot) and ask in plain language: *“status of 12A”*, *“who's waiting for
   consult?”*, *“any referrals today?”*. Answered entirely in the browser — no
-  model call, no dependency, no round trip. See [below](#the-assistant).
+  model call, no dependency, no round trip.
 - **In-flow coaching.** The mascot gives each station a short, situation-aware
   line — what to do here, what's blocking, what's next — so a volunteer can work
   out the flow without being trained on it first.
@@ -84,7 +79,7 @@ Veasna is a chatbot curated deliberately small: no NLP library, no model, no net
 answer time. Its entire runtime dependency closure is **three source files and
 zero npm packages**.
 
-It works in three layers:
+How our firefly talks:
 
 1. **Fetch** — pull today's queue and each visit record (concurrency-capped,
    ETag-revalidated).
@@ -95,8 +90,7 @@ It works in three layers:
    name or station mentioned, scores eleven intents by keyword hits, and hands
    the winner a handler.
 
-Because answering touches no network, the assistant keeps working on a bad link —
-it just answers from the last queue it managed to sync.
+Everything implemented is run on the local machine without require any online interactions with internet servers
 
 ## Tech stack
 
@@ -106,9 +100,6 @@ primitives, Electron for desktop packaging.
 
 **Backend** — Node/Express + PostgreSQL, in a separate repository:
 [**Runus01/veasna-backend**](https://github.com/Runus01/veasna-backend).
-
-The mascot is hand-drawn as a 20×20 character grid and painted with the raw
-canvas 2D context — no sprite sheets and no animation library.
 
 ## Getting started
 
@@ -169,44 +160,6 @@ environment variable to point it somewhere else.
 > host address in `package.json`. Change the `-H` flag to the LAN IP of the
 > machine serving the app, so other laptops at the site can reach it.
 
-## Project structure
-
-```
-src/
-├─ app/
-│  ├─ (auth)/login/           Sign-in
-│  └─ (main)/                 Station pages, sharing a nav + assistant shell
-│     ├─ page.tsx             Home: today's queue + registration
-│     ├─ triage/  seva/  physiotherapy/  doctors-consultation/
-│     ├─ patient-list/  patient-details/
-│     └─ pharmacy/
-├─ components/
-│  ├─ mascot/                 Sprite renderer, coach, chat panel, progress rail
-│  ├─ shared/                 Station shells, search, read-only panels
-│  └─ ui/                     Radix-based primitives
-├─ lib/
-│  ├─ mascot/                 sprite.ts · stations.ts · chat-engine.ts
-│  ├─ api/                    Typed request layer, ETag caching
-│  └─ types/                  Shared domain types
-└─ stores/                    Zustand: user, location, location data, screening
-```
-
-Three files carry most of the product logic worth reading first:
-
-- **`lib/mascot/stations.ts`** — the journey model and `deriveStatus()`
-- **`lib/mascot/chat-engine.ts`** — the intent matcher
-- **`app/globals.css`** — the design tokens both themes are built from
-
-## Design
-
-The palette is a calm jade/teal clinical base lit by a warm amber accent — the
-mascot's lantern. Everything is expressed as CSS custom properties mapped into
-Tailwind, so light and dark themes are the same components with a different token
-set.
-
-Motion is deliberately rationed. The mascot is still by default and animates only
-where movement reports something: the assistant thinking, work loading, the
-firefly moving to a new station.
 
 ## Acknowledgements
 
